@@ -40,7 +40,7 @@ const partySessionSchema = new mongoose.Schema({
         auto: true,
     },
 
-    party_id: {
+    party: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
