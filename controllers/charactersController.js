@@ -1,7 +1,7 @@
 const Character = require('../models/characters');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
-
+const characterValidationRules = require('../validators/characterValidator');
 /**
  * Middleware to validate character data
  */
