@@ -77,11 +77,11 @@ const spellSchema = new mongoose.Schema({
         required: true,
     },
 
-    races: {
+    races: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'races',
         required: true,
-    },
+    }],
 
     levels: levelSchema,
 

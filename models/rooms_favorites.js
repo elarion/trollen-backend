@@ -16,7 +16,7 @@ const roomFavoriteSchema = new mongoose.Schema({
     },
 
     // Identifiant de la salle favorite
-    room_id: {
+    room: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rooms', // Référence vers la collection `rooms`
         required: true, // Un favori doit obligatoirement concerner une salle
