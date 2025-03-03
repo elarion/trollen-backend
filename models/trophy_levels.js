@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const partySchema = new mongoose.Schema({
+const trophyLevelSchema = new mongoose.Schema({
     
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -43,6 +43,6 @@ const partySchema = new mongoose.Schema({
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
 });
 
-const Party = mongoose.model('parties', partySchema);
+const TrophyLevel = mongoose.model('trophy_levels', trophyLevelSchema);
 
-module.exports = Party;
+module.exports = TrophyLevel;
