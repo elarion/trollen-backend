@@ -33,7 +33,7 @@ const characterHasItemSchema = new mongoose.Schema({
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
 });
 
-characterHasItemSchema.index({user_id: 1, item_id: 1}, {unique : true})
+characterHasItemSchema.index({character: 1, item: 1}, {unique : true})
 
 const CharacterHasItem = mongoose.model('characters_has_items', characterHasItemSchema);
 
