@@ -1,39 +1,40 @@
 const Character = require('../models/characters');
-const { body, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
 /**
- * Règles de validation des personnages
- */
-const characterValidationRules = () => [
-    body('user', 'User ID is required').notEmpty(),
-    body('race', 'Race ID is required').notEmpty(),
-    body('gender', 'Gender is required').notEmpty().isIn(['female', 'male', 'non-binary']),
-];
-
-/**
- * Middleware pour valider les requêtes de création de personnage
+ * Middleware to validate character data
  */
 const validateCharacter = (req, res, next) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, message: 'Validation failed', errors: errors.array() });
     }
+
     next();
 };
 
+/**
+ * Create a character
+ */
 const createCharacter = async ({ user, race, gender, avatar = '' }) => {
-    if (!user || !race || !gender) {
-        throw new Error('Missing required fields for character creation');
-    }
+    try {
+        if (!user || !race || !gender) {
+            throw { statusCode: 400, message: 'Champs requis manquants pour la création du personnage' };
+        }
 
-    // Vérifie si l'utilisateur a déjà un personnage
-    const existingCharacter = await Character.findOne({ user });
-    if (existingCharacter) {
-        throw new Error('User already has a character');
-    }
+        // check if user already has a character
+        const existingCharacter = await Character.findOne({ user });
+        if (existingCharacter) {
+            throw { statusCode: 409, message: 'L\'utilisateur a déjà un personnage' };
+        }
 
-    return await Character.create({ user, race, gender, avatar });
+        const character = await Character.create({ user, race, gender, avatar });
+        return character;
+    } catch (error) {
+        throw error;
+    }
 };
 
 const createCharacterFromSignup = async (userData) => {
@@ -49,10 +50,7 @@ const createCharacterFromSignup = async (userData) => {
     }
 
     return await Character.create({ user, race, gender, avatar });
-    // return createCharacter({ user, race, gender, avatar });
 };
-
-console.log(new mongoose.Types.ObjectId());
 
 module.exports = {
     characterValidationRules,

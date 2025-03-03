@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     has_consent: {
         type: Boolean,
         required: true, // L'utilisateur doit obligatoirement donner son consentement
-        default: false, // Par défaut, le consentement est refusé
+        default: true, // Par défaut, le consentement est refusé
     },
 
     // Identifiant unique de la connexion WebSocket
