@@ -2,6 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const { check, body, validationResult } = require("express-validator");
 const User = require("../models/users");
+const uid2 = require('uid2');
 const router = express.Router();
 //Création compte
 router.post("/signup",
@@ -26,7 +27,7 @@ router.post("/signup",
 			let user = await User.findOne({ email });
 			if (user) return res.status(400).json({ message: "Cet email est déjà utilisé" });
 
-			user = new User({ username, email, password, refresh_token: 'aaa' });
+			user = new User({ username, email, password, refresh_token: uid2(32), socket_id: uid2(32) });
 			await user.save();
 
 			const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -67,4 +68,20 @@ router.post('/signin',
 		}
 	});
 
+	// mode invité
+router.post('/signup-guest', async (req, res) =>{
+	try {
+        const guestUser = {
+            id: `guest_${Date.now()}`, 
+            username: 'Guest',
+            role: 'guest',
+        };
+
+        const token = jwt.sign(guestUser, 'SECRET_KEY', { expiresIn: '1h' });
+
+        res.json({ user: guestUser, token });
+    } catch (error) {
+        res.status(500).json({ message: 'Erreur lors de la connexion en mode invité' });
+    }
+})
 module.exports = router;
