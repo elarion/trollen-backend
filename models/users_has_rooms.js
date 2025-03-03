@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Définition du schéma users_has_rooms
 const userHasRoomSchema = mongoose.Schema({
     // Identifiant unique de l'entrée (géré automatiquement)
     _id: {

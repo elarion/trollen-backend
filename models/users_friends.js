@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Définition du schéma users_friends
 const userFriendSchema = mongoose.Schema({
     // Identifiant unique pour chaque relation d’amitié
     _id: {
@@ -32,6 +33,6 @@ const userFriendSchema = mongoose.Schema({
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
 });
 
-const UserFriend = mongoose.mongoose.model('users_friends', userFriendSchema);
+const UserFriend = mongoose.model('users_friends', userFriendSchema);
 
 module.exports = UserFriend;
