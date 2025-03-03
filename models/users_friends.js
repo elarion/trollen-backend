@@ -9,14 +9,14 @@ const userFriendSchema = mongoose.Schema({
     },
 
     // Premier utilisateur dans la relation d'amitié
-    user_id_1: {
+    user_1: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Référence à la collection "users"
         required: true, // Obligatoire : chaque relation doit avoir un premier utilisateur
     },
 
     // Deuxième utilisateur dans la relation d'amitié
-    user_id_2: {
+    user_2: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Référence à la collection "users"
         required: true, // Obligatoire : chaque relation doit avoir un deuxième utilisateur

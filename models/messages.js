@@ -5,7 +5,7 @@ const messageSchema = new mongoose.Schema({
     _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 
     // Utilisateur ayant envoyé le message
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
         required: true,
@@ -13,7 +13,7 @@ const messageSchema = new mongoose.Schema({
     },
 
     // Référence vers une Room (optionnel, si le message est envoyé dans une salle)
-    room_id: {
+    room: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rooms',
         required: function () {

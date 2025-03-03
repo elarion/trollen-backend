@@ -5,7 +5,7 @@ const characterSchema = new mongoose.Schema({
     _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 
     // Référence à l'utilisateur propriétaire du personnage
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
         required: true,
