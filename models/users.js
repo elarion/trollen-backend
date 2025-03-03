@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
     // Identifiant unique de la connexion WebSocket
     socket_id: {
         type: String,
-        required: true, // Obligatoire pour la gestion des connexions en temps réel
         unique: true, // Un utilisateur ne peut avoir qu'un seul socket_id actif
     },
 
