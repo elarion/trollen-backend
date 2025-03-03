@@ -1,0 +1,94 @@
+const mongoose = require('mongoose');
+
+const levelSchema = new mongoose.Schema({
+
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true,
+    },
+
+    lvl: {
+        type: Number,
+        required: true,
+        default: 1
+    },
+
+    effect :{
+        type: String,
+        required: true,
+    },
+
+    image :{
+        type: String,
+        required: true,
+    },
+
+    cooldown:{
+        type: Number,
+        require: true,
+        default: 0
+    },
+
+    target:{
+        type: String,
+        enum: [zone, ennemy, choice]
+    },
+
+    damage: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+
+    mana_cost: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    
+})
+
+const spellSchema = new mongoose.Schema({
+    
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto : true,
+    },
+
+    name: {
+        type: String,
+        unique: true,
+        required: true
+    },
+
+    description: {
+        type: String,
+        required: true,
+    },
+
+    image: {
+        type: String,
+        required: true,
+    },
+
+    category: {
+        type: String, 
+        enum: ['active','passive'],
+        required: true,
+    },
+
+    races: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'races',
+        required: true,
+    },
+
+    levels: levelSchema,
+
+}, {
+    timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
+});
+
+const Spell = mongoose.model('spells', spellSchema);
+
+module.exports = Spell;
