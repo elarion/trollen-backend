@@ -9,14 +9,14 @@ const userHasPartieSchema = mongoose.Schema({
     },
 
     // Utilisateur qui a rejoint la party
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Référence à la collection "users"
         required: true, // Obligatoire : Un utilisateur doit être lié à une party
     },
 
     // Party rejointe par l'utilisateur
-    party_id: {
+    party: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'parties', // Référence à la collection "parties"
         required: true, // Obligatoire : un utilisateur doit être lié à une party
@@ -43,7 +43,7 @@ const userHasPartieSchema = mongoose.Schema({
 // Indexation pour optimiser la recherche par utilisateur et party
 // On peut aussi faire ça la plutot que directement dans l'objet du Schema 
 // pour éviter la redondance
-userHasPartieSchema.index({ user_id: 1, party_id: 1 }, { unique: true });
+userHasPartieSchema.index({ user: 1, party: 1 }, { unique: true });
 
 const UserHasParty = mongoose.model('UserHasParty', userHasPartieSchema);
 

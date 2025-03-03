@@ -5,7 +5,7 @@ const characteristicSchema = new mongoose.Schema({
     _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 
     // Référence au personnage auquel ces caractéristiques appartiennent
-    character_id: {
+    character: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'characters',
         required: true,
@@ -24,12 +24,6 @@ const characteristicSchema = new mongoose.Schema({
     // Progression du personnage
     level: { type: Number, default: 1 }, // Niveau
     xp: { type: Number, default: 0 }, // Points d'expérience
-
-    // Date de création automatique
-    createdAt: { type: Date, default: Date.now },
-
-    // Dernière mise à jour automatique
-    updatedAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 
 const Characteristic = mongoose.model('characteristics', characteristicSchema);
