@@ -1,20 +1,36 @@
+/** Dotenv && MongoDB */
+require("dotenv").config();
+require("./configs/db");
+/** END OF Dotenv && MongoDB */
+
+/** Express &&  */
 var express = require('express');
+const helmet = require("helmet");
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const cors = require("cors");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+/** Routes */
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const charactersRouter = require('./routes/characters');
+/** END OF Routes */
 
 var app = express();
 
+/** Middleware */
 app.use(logger('dev'));
+app.use(cors());
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+/** END OF Middlewares */
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/characters', charactersRouter);
 
 module.exports = app;
