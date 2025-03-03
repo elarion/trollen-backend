@@ -7,7 +7,7 @@ const actionSchema = new mongoose.Schema({
         auto: true,
     },
 
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
         required: true,
@@ -73,7 +73,7 @@ const partySessionSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 
-	winner_id: {
+	winner: {
 		type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
         
