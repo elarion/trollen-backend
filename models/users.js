@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const bcryptjs = require('bcryptjs');
 
 // Définition du schéma User
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     // Identifiant unique de l'utilisateur (généré automatiquement par MongoDB)
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -95,5 +96,22 @@ const UserSchema = new mongoose.Schema({
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
 });
 
+// Middleware de hashage du password
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+
+    try {
+        const salt = await bcryptjs.genSalt(10);
+        this.password = await bcryptjs.hash(this.password, salt);
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Initialisation du model User
+const User = mongoose.model('User', userSchema);
+
 // Export du modèle User
-module.exports = mongoose.model('User', UserSchema);
+module.exports = User;
