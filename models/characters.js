@@ -15,7 +15,7 @@ const characterSchema = new mongoose.Schema({
     // Pseudo du personnage, par défaut identique au `username` de l'utilisateur
     pseudo: {
         type: String,
-        default: function () { return this.user_id.username; },
+        default: function () { return this.user.username; },
         index: true
     },
 
