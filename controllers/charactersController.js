@@ -37,7 +37,7 @@ const createCharacter = async ({ user, race, gender, avatar = '' }) => {
 };
 
 const createCharacterFromSignup = async (userData) => {
-    const { _id: user, race = new mongoose.Types.ObjectId(), gender, avatar } = userData;
+    const { _id: user, race = new mongoose.Types.ObjectId(), gender, avatar = '' } = userData;
 
     if (!user || !race || !gender) {
         throw new Error('Missing required fields for character creation');
