@@ -5,8 +5,8 @@ const { body } = require("express-validator");
  */
 const userValidationRules = (isCharacter = false) => {
     const validationRules = [
-        body("username", "Le nom est requis").notEmpty(),
-        body("email", "Veuillez entrer un email valide").trim().notEmpty().isEmail(),
+        body("username", "The username is required").notEmpty(),
+        body("email", "The email is required").trim().notEmpty().isEmail(),
         body("password", "The password must have 6 characters minimum").matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/),
         body("confirmPassword").custom((value, { req }) => {
             if (value !== req.body.password) {
