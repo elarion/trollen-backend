@@ -1,7 +1,12 @@
+require("dotenv").config();
+require("./configs/db");
 var express = require('express');
+const helmet = require("helmet");
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const cors = require("cors");
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -9,6 +14,8 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 app.use(logger('dev'));
+app.use(cors());
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
