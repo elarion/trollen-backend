@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const roomSettingSchema = mongoose.Schema.create({
+const roomSettingSchema = mongoose.Schema({
     // Identifiant unique de la configuration de la salle
     _id: {
         type: mongoose.Schema.Types.ObjectId,

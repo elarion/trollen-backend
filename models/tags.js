@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const tagSchema = mongoose.Schema.create({
+// Définition du schéma Tag
+const tagSchema = mongoose.Schema({
     // Identifiant unique du tag
     _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 

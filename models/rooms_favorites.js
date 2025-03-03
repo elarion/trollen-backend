@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const roomFavoriteSchema = new mongoose.Schema({
     // Identifiant unique de l'entrée
-    _id: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        auto: true 
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
     },
 
     // Identifiant de l’utilisateur ayant ajouté la salle en favori
@@ -15,7 +15,7 @@ const roomFavoriteSchema = new mongoose.Schema({
         index: true,   // Optimisation pour retrouver rapidement les favoris d'un utilisateur
     },
 
-    // 🏠 Identifiant de la salle favorite
+    // Identifiant de la salle favorite
     room_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rooms', // Référence vers la collection `rooms`
