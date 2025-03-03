@@ -7,13 +7,13 @@ const characterHasSpellSchema = new mongoose.Schema({
         auto : true,
     },
 
-    character_id: {
+    character: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'characters',
         required: true,
     },
 
-    spell_id: {
+    spell: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'spells',
         required: true,
