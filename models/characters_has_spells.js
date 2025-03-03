@@ -45,7 +45,7 @@ const characterHasSpellSchema = new mongoose.Schema({
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
 });
 
-characterHasSpellSchema.index({user_id: 1, spell_id: 1}, {unique : true})
+characterHasSpellSchema.index({character: 1, spell: 1}, {unique : true})
 
 const CharacterHasSpell = mongoose.model('characters_has_spells', characterHasSpellSchema);
 

@@ -17,17 +17,17 @@ const messageSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rooms',
         required: function () {
-            return !this.party_id; // room_id est requis si party_id est NULL
+            return !this.party; // room_id est requis si party_id est NULL
         },
         index: true, // Améliore les performances des requêtes filtrant par room
     },
 
     // Référence vers une Party (optionnel, si le message est envoyé dans une partie)
-    party_id: {
+    party: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'parties',
         required: function () {
-            return !this.room_id; // party_id est requis si room_id est NULL
+            return !this.room; // party_id est requis si room_id est NULL
         },
         index: true, // Permet d'accélérer les requêtes dans les parties
     },
@@ -56,7 +56,7 @@ const messageSchema = new mongoose.Schema({
 // Index unique pour éviter d'avoir un message référencé à la fois dans `rooms` et `parties`
 // Etant donné que room_id et party_id sont "optionnels" dans un cas ou dans un autre, on indique sparse : true 
 // Pour les retiré de l'index pour l'un des champs qui sera null
-messageSchema.index({ room_id: 1, party_id: 1 }, { sparse: true });
+messageSchema.index({ room: 1, party: 1 }, { sparse: true });
 
 const Message = mongoose.model('messages', messageSchema);
 

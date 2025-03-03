@@ -28,17 +28,17 @@ const raceSchema = new mongoose.Schema({
         required: true,
     },
 
-    spells: {
+    spells: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'spells',
         required: true,
-    },
+    }],
 
 }, {
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
 });
 
-raceSchema.index({user: 1, spell: 1}, {unique : true})
+raceSchema.index({spell: 1}, {unique : true})
 
 const Race = mongoose.model('races', raceSchema);
 
