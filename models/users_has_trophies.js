@@ -8,7 +8,7 @@ const userHasTrophySchema = mongoose.Schema({
     },
 
     // Référence vers l'utilisateur ayant obtenu le trophée
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Référence à la collection "users"
         required: true, // L'utilisateur est obligatoire
@@ -16,7 +16,7 @@ const userHasTrophySchema = mongoose.Schema({
     },
 
     // Référence vers le trophée remporté
-    trophy_id: {
+    trophy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'trophies', // Référence à la collection "trophies"
         required: true, // Un trophée est obligatoire

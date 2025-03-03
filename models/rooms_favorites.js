@@ -8,7 +8,7 @@ const roomFavoriteSchema = new mongoose.Schema({
     },
 
     // Identifiant de l’utilisateur ayant ajouté la salle en favori
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',  // Référence vers la collection `users`
         required: true, // Un favori doit être lié à un utilisateur
@@ -25,7 +25,7 @@ const roomFavoriteSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Index unique pour éviter qu'un utilisateur ajoute plusieurs fois la même salle en favori
-roomFavoriteSchema.index({ user_id: 1, room_id: 1 }, { unique: true });
+roomFavoriteSchema.index({ user: 1, room: 1 }, { unique: true });
 
 const RoomFavorite = mongoose.model('rooms_favorites', roomFavoriteSchema);
 
