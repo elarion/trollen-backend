@@ -12,6 +12,14 @@ const characterSchema = new mongoose.Schema({
         index: true
     },
 
+    // Référence à la race du personnage
+    race: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'races',
+        required: true,
+        index: true
+    },
+
     // Pseudo du personnage, par défaut identique au `username` de l'utilisateur
     pseudo: {
         type: String,
@@ -21,7 +29,8 @@ const characterSchema = new mongoose.Schema({
 
     // URL ou chemin vers l'image de l'avatar du personnage
     avatar: {
-        type: String
+        type: String,
+        default: null,
     },
 
     // Genre du personnage (obligatoire)
@@ -30,14 +39,6 @@ const characterSchema = new mongoose.Schema({
         enum: ['female', 'male', 'non-binary'],
         required: true,
         default: 'non-binary',
-    },
-
-    // Référence à la race du personnage
-    race: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'races',
-        required: true,
-        index: true
     },
 }, { timestamps: true });
 
