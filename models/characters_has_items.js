@@ -7,13 +7,13 @@ const characterHasItemSchema = new mongoose.Schema({
         auto : true,
     },
 
-    character_id: {
+    character: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'characters',
         required: true,
     },
 
-    item_id: {
+    item: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'items',
         required: true,
