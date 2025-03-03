@@ -10,11 +10,11 @@ const userValidationRules = (isCharacter = false) => {
         body("password", "The password must have 6 characters minimum").matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/),
         body("confirmPassword").custom((value, { req }) => {
             if (value !== req.body.password) {
-                throw new Error("Les mots de passe ne correspondent pas");
+                throw new Error("The passwords do not match");
             }
             return true;
         }),
-        body("has_consent", "Vous devez obligatoirement accepter les CGU").isBoolean().equals(true),
+        body("has_consent", "You must accept the CGU").isBoolean().equals(true),
     ];
 
     if (isCharacter) {
@@ -33,11 +33,11 @@ const userValidationRules = (isCharacter = false) => {
 const signInValidationRules = () => [
     body("username").custom((value, { req }) => {
         if (!value && !req.body.email) {
-            throw new Error("Le username ou l'email est requis");
+            throw new Error("The username or the email is required");
         }
         return true;
     }),
-    body("password", "Le mot de passe est requis").notEmpty(),
+    body("password", "The password is required").notEmpty(),
 ];
 
 /**
