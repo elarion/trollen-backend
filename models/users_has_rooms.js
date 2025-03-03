@@ -9,14 +9,14 @@ const userHasRoomSchema = mongoose.Schema({
     },
 
     // Utilisateur qui a rejoint la room
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Référence à la collection "users"
         required: true, // Un enregistrement doit forcément être lié à un utilisateur
     },
 
     // Room rejointe par l'utilisateur
-    room_id: {
+    room: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rooms', // Référence à la collection "rooms"
         required: true, // Obligatoire : un utilisateur doit être lié à une room

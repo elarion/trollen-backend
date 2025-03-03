@@ -7,7 +7,7 @@ const partySchema = new mongoose.Schema({
         auto : true,
     },
 
-    trophy_id: {
+    trophy: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'games',

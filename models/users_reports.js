@@ -8,14 +8,14 @@ const userReportSchema = mongoose.Schema({
     },
 
     // Utilisateur qui fait le signalement
-    reporter_id: {
+    reporter: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Référence à la collection "users"
         required: true, // Obligatoire : un rapport a toujours un rapporteur
     },
 
     // Utilisateur signalé
-    reported_id: {
+    reported: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Référence à la collection "users"
         required: true, // Obligatoire : un rapport doit avoir une cible

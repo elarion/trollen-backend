@@ -8,7 +8,7 @@ const roomSettingSchema = mongoose.Schema({
     },
 
     // Référence vers la salle concernée
-    room_id: {
+    room: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rooms',  // 📎 Référence vers la collection `rooms`
         required: true, // Un paramètre de salle doit obligatoirement être lié à une salle
