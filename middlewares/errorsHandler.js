@@ -41,7 +41,7 @@ const errorHandler = (err, req, res, next) => {
             success: false,
             message: "Duplicate key error.",
             // Extract the field name from the error object because the error for duplicate key is different from the validation or cast error
-            errors: [{ field: Object.keys(err.keyPattern)[0], message: "Ce champ doit être unique." }],
+            errors: [{ field: Object.keys(err.keyPattern)[0], message: "This field must be unique." }],
         });
     }
 

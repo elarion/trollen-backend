@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const characteristicSchema = new mongoose.Schema({
+const caracteristicSchema = new mongoose.Schema({
     // Identifiant unique de la caractéristique
     _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
 
@@ -26,6 +26,6 @@ const characteristicSchema = new mongoose.Schema({
     xp: { type: Number, default: 0 }, // Points d'expérience
 }, { timestamps: true });
 
-const Characteristic = mongoose.model('characteristics', characteristicSchema);
+const Caracteristic = mongoose.model('characteristics', caracteristicSchema);
 
-module.exports = Characteristic;
+module.exports = Caracteristic;
