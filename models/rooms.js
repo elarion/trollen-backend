@@ -30,7 +30,7 @@ const roomSchema = new mongoose.Schema({
     },
 
     // Liste des tags associés à la salle
-    tags_id: [{
+    tags: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'tags',  // Référence vers la collection `tags`
         index: true,  // Améliore les recherches sur les salles par tags
@@ -38,7 +38,7 @@ const roomSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Index sur les tags pour optimiser les requêtes multi-tags
-roomSchema.index({ tags_id: 1 });
+roomSchema.index({ tags: 1 });
 
 const Room = mongoose.model('rooms', roomSchema);
 
