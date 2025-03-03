@@ -18,7 +18,8 @@ router.post("/signup",
 				throw new Error('Les mots de passe ne correspondent pas');
 			}
 			return true;
-		})
+		}),
+		body('has_consent', "Vous devez obligatoirement accepter les CGU").toBoolean().equals('true'),
 	], async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -27,7 +28,7 @@ router.post("/signup",
 			let user = await User.findOne({ email });
 			if (user) return res.status(400).json({ message: "Cet email est déjà utilisé" });
 
-			user = new User({ username, email, password, refresh_token: uid2(32), socket_id: uid2(32) });
+			user = new User({ username, email, password, refresh_token: uid2(32), socket_id: uid2(32), has_consent: true  });
 			await user.save();
 
 			const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -77,7 +78,7 @@ router.post('/signup-guest', async (req, res) =>{
             role: 'guest',
         };
 
-        const token = jwt.sign(guestUser, 'SECRET_KEY', { expiresIn: '1h' });
+        const token = jwt.sign(guestUser, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.json({ user: guestUser, token });
     } catch (error) {
