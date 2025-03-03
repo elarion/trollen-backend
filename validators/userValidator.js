@@ -1,5 +1,5 @@
 const { body } = require("express-validator");
-
+const {characterValidationRules} = require('./characterValidator');
 /**
  * Validation rules for user creation
  */
@@ -18,11 +18,7 @@ const userValidationRules = (isCharacter = false) => {
     ];
 
     if (isCharacter) {
-        validationRules.push(
-            body('user', 'User ID is required').notEmpty(),
-            body('race', 'Race ID is required').notEmpty(),
-            body('gender', 'Gender is required').notEmpty().isIn(['female', 'male', 'non-binary']),
-        );
+        validationRules.push(...characterValidationRules());
     }
 
     return validationRules;
