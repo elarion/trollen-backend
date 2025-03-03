@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Caracteristic = require('./caracteristics');
 
 const characterSchema = new mongoose.Schema({
     // Identifiant unique du personnage
@@ -41,6 +42,28 @@ const characterSchema = new mongoose.Schema({
         default: 'non-binary',
     },
 }, { timestamps: true });
+
+characterSchema.post('save', async function (doc, next) {
+    // here doc is the character saved document
+    // in a pre middleware, doc won't be available because the save doesn't happen yet
+    // in a post middleware, doc is available because the save has happened
+    // so use this in a pre middleware but afterall, the case is not the same.
+    // also, remember that this is not available in an anonymous arrow function
+    try {
+        // create the caracteristics for the character
+        // no need to add the other fields like 'strength', 'intelligence', etc because they have default values
+        const newCaracteristic = await Caracteristic.create({ character: doc._id });
+        // update the character with the caracteristic 
+        // this way to have access to the caracteristic document reference saved in the character
+        // after the save done in the controller
+        await Character.findByIdAndUpdate(doc._id, { caracteristics: newCaracteristic._id });
+        
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 const Character = mongoose.model('characters', characterSchema);
 
