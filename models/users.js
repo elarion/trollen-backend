@@ -68,6 +68,13 @@ const userSchema = new mongoose.Schema({
         default: null, // Par défaut, pas d'avatar
     },
 
+    // Indique si l'utilisateur est un "guest" (non-inscrit)
+    is_guest: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+
     // Rôle de l'utilisateur (permissions)
     role: {
         type: String,
