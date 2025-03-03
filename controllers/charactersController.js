@@ -33,7 +33,7 @@ const createCharacter = async ({ user, race, gender, avatar = '' }) => {
         throw new Error('User already has a character');
     }
 
-    return Character.create({ user, race, gender, avatar });
+    return await Character.create({ user, race, gender, avatar });
 };
 
 const createCharacterFromSignup = async (userData) => {
@@ -48,7 +48,7 @@ const createCharacterFromSignup = async (userData) => {
         throw new Error('User already has a character');
     }
 
-    return Character.create({ user, race, gender, avatar });
+    return await Character.create({ user, race, gender, avatar });
     // return createCharacter({ user, race, gender, avatar });
 };
 
