@@ -27,9 +27,9 @@ const addSpell = async (req, res, next) => {
 
 const getSpell = async (req, res, next) => {
     try {
-        const {_id } = req.body;
+        const {_id } = req.params;
 
-        let spell = await Spell.findById({ _id });
+        let spell = await Spell.findById({_id});
         if (!spell) throw {statusCode: 400, message: "Ce sort n'est pas utilisable"};
 
         res.status(201).json({ success: true, message: "Spell invoqué avec succès", spell})
