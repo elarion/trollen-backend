@@ -7,7 +7,8 @@ const userValidationRules = (isCharacter = false) => {
     const validationRules = [
         body("username", "The username is required").notEmpty(),
         body("email", "The email is required").trim().notEmpty().isEmail(),
-        body("password", "The password must have 6 characters minimum").matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/),
+        body("password", "The password must have 6 characters minimum"),
+         // .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/)
         body("confirmPassword").custom((value, { req }) => {
             if (value !== req.body.password) {
                 throw new Error("The passwords do not match");

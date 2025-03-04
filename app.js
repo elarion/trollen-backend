@@ -15,7 +15,10 @@ const cors = require("cors");
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const charactersRouter = require('./routes/characters');
-const messagesRouter = require('./routes/messages')
+const messagesRouter = require('./routes/messages');
+const racesRouter = require('./routes/races');
+const spellsRouter = require('./routes/spells');
+const roomsRouter = require('./routes/rooms');
 /** END OF Routes */
 
 var app = express();
@@ -33,6 +36,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/characters', charactersRouter);
-app.use('/messages', messagesRouter)
-
+app.use('/messages', messagesRouter);
+app.use('/races', racesRouter);
+app.use('/spells', spellsRouter);
+app.use('/rooms', roomsRouter);
 module.exports = app;
