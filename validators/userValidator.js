@@ -15,7 +15,7 @@ const userValidationRules = (isCharacter = false) => {
             }
             return true;
         }),
-        body("has_consent", "You must accept the CGU").isBoolean().equals(true),
+        body("has_consent", "You must accept the CGU").isBoolean().equals("true"),
     ];
 
     if (isCharacter) {

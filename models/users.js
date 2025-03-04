@@ -122,7 +122,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 // Initialisation du model User
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('users', userSchema);
 
 
 // Export du modèle User
