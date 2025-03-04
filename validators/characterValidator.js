@@ -8,9 +8,9 @@ const { body } = require('express-validator');
  * characterValidationRules({ isUpdate: true })
  */
 const characterValidationRules = () => [
-    body('user', 'User ID is required').notEmpty(),
+    // body('user', 'User ID is required').notEmpty(),
     body('race', 'Race ID is required').notEmpty(),
-    body('gender', 'Gender is required').notEmpty().isIn(['female', 'male', 'non-binary']),
+    body('gender', 'Gender is required').optional().isIn(['female', 'male', 'non-binary']),
 ];
 
 module.exports = { characterValidationRules };
