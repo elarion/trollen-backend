@@ -1,7 +1,7 @@
 const express = require("express");
 const { spellValidationRules } = require("../validators/spellValidators");
 const validateRequest = require("../middlewares/validationRequest")
-const { addSpell, getSpell } = require("../controllers/spellsController");
+const { addSpell, getSpell, getSpellByRace } = require("../controllers/spellsController");
 const errorHandler = require("../middlewares/errorHandler")
 
 const router = express.Router();
@@ -14,7 +14,8 @@ router.use(errorHandler);
 // router.use(mymiddleware) will apply for all the routes after it
 // so if you put it after the pre-signup route, it will apply for all the routes after it and not the pre-signup one
 
-router.post("/", spellValidationRules(), validateRequest, addSpell)
-//router.get("/", getSpell())
+router.post("/", spellValidationRules(), validateRequest, addSpell);
+router.get("/", getSpell);
+router.get("/races", getSpellByRace)
 
 module.exports = router;
