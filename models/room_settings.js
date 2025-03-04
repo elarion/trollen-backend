@@ -20,7 +20,7 @@ const roomSettingSchema = mongoose.Schema({
     max: {
         type: Number,
         required: true,  // Ce champ est obligatoire
-        default: 0,      // Valeur par défaut illimitée (à ajuster si besoin)
+        default: 0,      // Valeur par défaut  (à ajuster si besoin)
         min: 0,          // Ne peut pas être négatif
     },
 
@@ -41,6 +41,7 @@ const roomSettingSchema = mongoose.Schema({
     // Mot de passe pour rejoindre une salle privée (optionnel)
     password: {
         type: String, // Stockage d'un hash si nécessaire
+        default: null,
     },
 }, { timestamps: true });
 

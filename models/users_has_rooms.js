@@ -34,7 +34,7 @@ const userHasRoomSchema = mongoose.Schema({
         type: String,
         enum: ['online', 'offline'], // Statuts possibles
         required: true,
-        default: 'pending', // Par défaut, il est en attente d'initialisation
+        default: 'online',
     },
 
     // Dernière activité de l'utilisateur dans la room
