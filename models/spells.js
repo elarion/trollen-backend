@@ -31,7 +31,7 @@ const levelSchema = new mongoose.Schema({
 
     target:{
         type: String,
-        enum: [zone, ennemy, choice]
+        enum: ["zone", "ennemy", "choice"]
     },
 
     damage: {
