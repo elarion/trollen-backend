@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const slugify = require('../utils/slugify');
 // Définition du schéma Tag
 const tagSchema = mongoose.Schema({
     // Identifiant unique du tag
@@ -24,6 +24,7 @@ const tagSchema = mongoose.Schema({
 }, { timestamps: true });
 
 // ajouter un middleware pre pour le slugify des tags
+
 
 const Tag = mongoose.model('tags', tagSchema);
 

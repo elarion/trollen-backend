@@ -23,7 +23,7 @@ const createCharacter = async ({ user, race, gender, avatar = '' }) => {
         // check if user already has a character
         const existingCharacter = await Character.findOne({ user });
         if (existingCharacter) {
-            throw { statusCode: 409, message: 'L\'utilisateur a déjà un personnage' };
+            throw { statusCode: 409, message: 'The user already has a character' };
         }
 
         const character = await Character.create({ user, race, gender, avatar });
@@ -38,7 +38,7 @@ const createCharacterFromSignup = async (userData) => {
 
     const existingCharacter = await Character.findOne({ user });
     if (existingCharacter) {
-        throw new Error('User already has a character');
+        throw { statusCode: 409, message: 'The user already has a character' };
     }
 
     return await Character.create({ user, race, gender, avatar });

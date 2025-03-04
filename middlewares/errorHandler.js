@@ -17,7 +17,9 @@ const errorHandler = (err, req, res, next) => {
     //     at myRoute (path/to/myRoute.js:1:3)
     //     at myApp (path/to/myApp.js:1:3)
     //     at global (path/to/global.js:1:3)
+    console.log('In errorHandler middleware');
     console.error(err.stack);
+
 
     // Handle mongoose validation errors
     if (err.name === "ValidationError") {
