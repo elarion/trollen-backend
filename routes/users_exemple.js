@@ -4,10 +4,18 @@ const {
     signInValidationRules,
     guestValidationRules,
 } = require("../validators/userValidator");
+const {
+    preSignup,
+    signup,
+    signin,
+    signupGuest
+} = require("../controllers/usersController");
+
+/** Middlewares */
 const validateRequest = require("../middlewares/validateRequest");
-const { preSignup, signup, signin, signupGuest } = require("../controllers/userController");
 const errorHandler = require("../middlewares/errorHandler");
 
+/** Router */
 const router = express.Router();
 
 router.use(errorHandler);
