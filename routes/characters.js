@@ -2,7 +2,7 @@ const express = require("express");
 const { characterValidationRules } = require("../validators/characterValidator");
 const { createCharacter } = require("../controllers/charactersController");
 const validateRequest = require("../middlewares/validationRequest");
-const errorHandler = require("../middlewares/errorsHandler");
+const errorHandler = require("../middlewares/errorHandler");
 
 const router = express.Router();
 

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { createUserHasRoom } = require('../controllers/usersHasRoomsController');
+const { createTagsFromRoomPreSave } = require('../controllers/tagsController');
 
 const roomSchema = new mongoose.Schema({
     // Identifiant unique de la salle
@@ -20,6 +22,7 @@ const roomSchema = new mongoose.Schema({
         type: String,
         required: true, // Un nom est nécessaire pour identifier la salle
         trim: true,     // Supprime les espaces inutiles en début et fin
+        unique: true,
     },
 
     // Description de la salle (optionnel)
@@ -38,7 +41,10 @@ const roomSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Index sur les tags pour optimiser les requêtes multi-tags
-roomSchema.index({ tags: 1 });
+roomSchema.index({ tags: 1, name: 1 }, { unique: true });
+
+roomSchema.pre('save', createTagsFromRoomPreSave);
+roomSchema.post('save', createUserHasRoom);
 
 const Room = mongoose.model('rooms', roomSchema);
 
