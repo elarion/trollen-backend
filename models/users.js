@@ -116,6 +116,7 @@ userSchema.pre('save', async function (next) {
     }
 });
 
+// Create a method to compare the password with the hashed password directly from the schema
 userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcryptjs.compare(enteredPassword, this.password);
 };
