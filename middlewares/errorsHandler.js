@@ -26,11 +26,11 @@ const errorHandler = (err, req, res, next) => {
             message: "Mongoose validation error",
             errors: formatMongooseErrors(err),
         });
-    // Handle mongoose cast error (invalid type)
+        // Handle mongoose cast error (invalid type)
     } else if (err.name === "CastError") {
         return res.status(400).json({
             success: false,
-            message: "Invalid type value",
+            message: "Mongoose invalid type value",
             errors: [{ field: err.path, message: "This field has an invalid type value" }],
         });
     }
@@ -39,7 +39,7 @@ const errorHandler = (err, req, res, next) => {
     if (err.code === 11000) {
         return res.status(400).json({
             success: false,
-            message: "Duplicate key error.",
+            message: "Mongoose duplicate key error.",
             // Extract the field name from the error object because the error for duplicate key is different from the validation or cast error
             errors: [{ field: Object.keys(err.keyPattern)[0], message: "This field must be unique." }],
         });
@@ -48,7 +48,7 @@ const errorHandler = (err, req, res, next) => {
     // Return formatted error if not a mongoose one
     res.status(err.statusCode || 500).json({
         success: false,
-        message : err.message || "Internal Server Error",
+        message: err.message || "Internal Server Error",
         errors: err.errors || [],
     });
 };

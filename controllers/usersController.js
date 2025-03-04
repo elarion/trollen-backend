@@ -2,10 +2,8 @@ const User = require("../models/users");
 const jwt = require("jsonwebtoken");
 const uid2 = require("uid2");
 const { createCharacterFromSignup } = require("./charactersController");
-const { formatMongooseErrors } = require("../utils/formatMongooseErrors");
-/**
- * Pre-signup
- */
+
+
 const preSignup = async (req, res) => {
     res.status(201).json({ success: true });
 };
@@ -18,9 +16,7 @@ const signup = async (req, res, next) => {
         const { username, email, password, gender, race, avatar } = req.body;
 
         let user = await User.findOne({ email });
-        if (user) {
-            throw { statusCode: 400, message: "Cet email est déjà utilisé" };
-        }
+        if (user) throw { statusCode: 400, message: "Cet email est déjà utilisé" };
 
         user = new User({
             username,
@@ -34,13 +30,15 @@ const signup = async (req, res, next) => {
 
         const character = await createCharacterFromSignup({ _id: user._id, gender, race, avatar });
 
+        // Generate a JWT token for the user
+        // The JWT is composed in three parts :
+        // - The payload : the data we want to store in the token { id: user._id }
+        // - The signature : a secret key to verify the token process.env.JWT_SECRET
+        // - The expiration : the date of the token's expiration { expiresIn: env.JWT_EXPIRATION_TIME }
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         res.status(201).json({ success: true, message: "Utilisateur créé avec succès", token, user, character });
     } catch (error) {
-        if (error.name === "ValidationError") {
-            return next({ statusCode: 400, message: "Validation Mongoose échouée", errors: formatMongooseErrors(error) });
-        }
         next(error);
     }
 };
@@ -84,10 +82,15 @@ const signupGuest = async (req, res, next) => {
 
         const token = jwt.sign({ id: guestUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-        res.status(200).json({ success: true, user: { username: guestUser.username, role: guestUser.role }, token });
+        res.status(201).json({ success: true, user: { username: guestUser.username, role: guestUser.role }, token });
     } catch (error) {
         next(error);
     }
 };
 
-module.exports = { preSignup, signup, signin, signupGuest };
+module.exports = {
+    preSignup,
+    signup,
+    signin,
+    signupGuest
+};
