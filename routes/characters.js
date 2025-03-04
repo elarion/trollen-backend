@@ -10,18 +10,9 @@ const router = express.Router();
 router.use(errorHandler);
 
 router.post("/create",
-    characterValidationRules(), // apply validation rules
+    characterValidationRules, // apply validation rules
     validateRequest,           // validate request data or not
-    async (req, res, next) => {
-        try {
-            const { user, race, gender, avatar } = req.body;
-            const character = await createCharacter({ user, race, gender, avatar });
-
-            res.status(201).json({ success: true, character });
-        } catch (error) {
-            next(error);
-        }
-    }
+    createCharacter
 );
 
 module.exports = router;

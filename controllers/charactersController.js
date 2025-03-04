@@ -20,10 +20,6 @@ const validateCharacter = (req, res, next) => {
  */
 const createCharacter = async ({ user, race, gender, avatar = '' }) => {
     try {
-        if (!user || !race || !gender) {
-            throw { statusCode: 400, message: 'Champs requis manquants pour la création du personnage' };
-        }
-
         // check if user already has a character
         const existingCharacter = await Character.findOne({ user });
         if (existingCharacter) {
@@ -39,10 +35,6 @@ const createCharacter = async ({ user, race, gender, avatar = '' }) => {
 
 const createCharacterFromSignup = async (userData) => {
     const { _id: user, race = new mongoose.Types.ObjectId(), gender, avatar = '' } = userData;
-
-    if (!user || !race || !gender) {
-        throw new Error('Missing required fields for character creation');
-    }
 
     const existingCharacter = await Character.findOne({ user });
     if (existingCharacter) {
