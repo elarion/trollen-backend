@@ -15,7 +15,7 @@ router.use(errorHandler);
 // so if you put it after the pre-signup route, it will apply for all the routes after it and not the pre-signup one
 
 router.post("/", spellValidationRules(), validateRequest, addSpell);
-router.get("/", getSpell);
+router.get("/:_id", getSpell);
 router.get("/races", getSpellByRace)
 
 module.exports = router;
