@@ -1,18 +1,15 @@
 const Tag = require('../models/tags');
 const slugify = require('../utils/slugify');
 
-const createTagsFromRoomPreSave = async (doc, next) => {
-    const { tags } = doc;
-
+const createTagsFromRoom = async function (tags = []) {
     try {
         if (!tags) return next();
 
         const newTags = tags.map(tag => {
-            const slug = slugify(tag.name);
             return {
                 'updateOne': {
                     'filter': { 'name': tag.name },
-                    'update': { '$set': { 'slug': slug } },
+                    'update': { '$set': { 'slug': slugify(tag.name) } },
                     'upsert': true
                 }
             }
@@ -20,13 +17,15 @@ const createTagsFromRoomPreSave = async (doc, next) => {
 
         await Tag.bulkWrite(newTags);
 
-        const tags = await Tag.find({ name: { $in: tags.map(tag => tag.name) } }, '_id');
-        doc.tags = tags;
+        const allTags = await Tag.find({ name: { $in: tags.map(tag => tag.name) } }, '_id');
 
-        next();
+        this.tags = allTags.map(tag => tag._id);
+
+        return allTags.map(tag => tag._id);
     } catch (error) {
-        next(error);
+        console.error('error =>', error);
+        throw new Error({ statusCode: 500, message: 'Error while creating tags', errors: error });
     }
 };
 
-module.exports = { createTagsFromRoomPreSave };
+module.exports = { createTagsFromRoom };
