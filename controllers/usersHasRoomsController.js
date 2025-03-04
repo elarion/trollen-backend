@@ -1,7 +1,7 @@
 const UserHasRoom = require('../models/users_has_rooms');
 
 const createUserHasRoom = async function (doc, next) {
-    const { _id, user } = doc;
+    const { _id, admin } = doc;
 
     try {
         const newUserHasRoom = new UserHasRoom({
