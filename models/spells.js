@@ -83,7 +83,7 @@ const spellSchema = new mongoose.Schema({
         required: true,
     }],
 
-    levels: levelSchema,
+    levels: [levelSchema],
 
 }, {
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
