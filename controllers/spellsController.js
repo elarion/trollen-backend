@@ -27,6 +27,16 @@ const addSpell = async (req, res, next) => {
 
 const getSpell = async (req, res, next) => {
     try {
+        let spells = await Spell.find()
+        res.status(201).json({ success: true, message: "Tous les spells sont invoqués!", spells})
+
+    } catch (error){
+        next(error);
+    }
+};
+
+const getSpellById = async (req, res, next) => {
+    try {
         const {_id } = req.params;
 
         let spell = await Spell.findById({_id});
@@ -56,5 +66,6 @@ const getSpellByRace = async (req, res, next) => {
 module.exports = {
     addSpell,
     getSpell,
+    getSpellById,
     getSpellByRace,
 };
