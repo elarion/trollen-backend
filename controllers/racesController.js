@@ -1,6 +1,5 @@
 const Race = require('../models/races')
 
-
 const allRaces = async (req, res, next) => {
     try {
         const races = await Race.find()
@@ -28,6 +27,8 @@ const getRaceByName = async (req, res, next) => {
         next(error);
     }
 }
+
+
 module.exports = {
     allRaces,
     getRaceByName,
