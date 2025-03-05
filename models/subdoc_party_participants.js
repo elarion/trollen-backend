@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // Définition du schéma parties_subdoc_particpants
-const partiesSubdocParticipantsSchema = mongoose.Schema({
+const subdocPartyParticipantsSchema = mongoose.Schema({
     // Identifiant unique de l'entrée (géré automatiquement)
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -33,12 +33,12 @@ const partiesSubdocParticipantsSchema = mongoose.Schema({
     timestamps: true // Ajoute automatiquement "createdAt" et "updatedAt"
 });
 
-// // Indexation pour optimiser la recherche par utilisateur et party
-// // On peut aussi faire ça la plutot que directement dans l'objet du Schema 
-// // pour éviter la redondance
+// Indexation pour optimiser la recherche par utilisateur et party
+// On peut aussi faire ça la plutot que directement dans l'objet du Schema 
+//  pour éviter la redondance
 // userHasPartieSchema.index({ user: 1, party: 1 }, { unique: true });
 
-const PartySubdocParticipants = mongoose.model('PartySubdocParticipants', partiesSubdocParticipantsSchema);
+const SubdocPartyParticipants= mongoose.model('subdocPartiesParticipants', subdocPartyParticipantsSchema);
 
-// Export du modèle PartySubdocParticipants
-module.exports = PartySubdocParticipants;
+// Export du modèle SubdocPartyParticipants
+module.exports = SubdocPartyParticipants;
