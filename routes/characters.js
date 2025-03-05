@@ -6,7 +6,6 @@ const errorHandler = require("../middlewares/errorHandler");
 
 const router = express.Router();
 
-
 router.get("/:userId", getCharacterByUserId);
 router.get("/:characterId/:userId", getAllCharactersByUserId);
 router.post("/create",
@@ -14,7 +13,6 @@ router.post("/create",
     validateRequest,
     createCharacter
 );
-
 
 // Error handler middleware
 router.use(errorHandler);

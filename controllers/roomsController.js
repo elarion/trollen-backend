@@ -1,35 +1,11 @@
-const User = require("../models/users");
-const jwt = require("jsonwebtoken");
-const uid2 = require("uid2");
+const {
+    getAll,
+    getById,
+    create,
+    join,
+    remove
+} = require("../services/roomService");
 
-const Room = require("../models/rooms");
-const { createTagsFromRoom } = require("./tagsController");
-
-/**
- * Get all rooms
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @param {Function} next - The next middleware function
- */
-const getAllRooms = async (req, res, next) => {
-    try {
-        const rooms = await Room.find()
-            .select('_id room_socket_id name user tags room_settings participants')
-            .populate([
-                { path: 'room_settings', select: '_id max is_safe is_private' },
-                { path: 'tags', select: '_id name slug' },
-                { path: 'admin', select: '_id username' },
-                {
-                    path: 'participants.user',
-                    select: '_id username'
-                }
-            ]);
-
-        res.status(200).json({ success: true, rooms });
-    } catch (error) {
-        next(error);
-    }
-};
 
 /**
  * Get a room by id
@@ -39,16 +15,24 @@ const getAllRooms = async (req, res, next) => {
  */
 const getRoomById = async (req, res, next) => {
     try {
-        const room = await Room.findById(req.params.id).populate([
-            { path: 'room_settings', select: '_id max is_safe is_private' },
-            { path: 'tags', select: '_id name slug' },
-            { path: 'admin', select: '_id username' },
-            { path: 'participants.user', select: '_id username' }
-        ]);
-
-        if (!room) throw { statusCode: 404, message: 'Room not found' };
+        const room = await getById(req.params.id);
 
         res.status(200).json({ success: true, room });
+    } catch (error) {
+        next(error);
+    }
+};
+/**
+ * Get all rooms
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next middleware function
+ */
+const getAllRooms = async (req, res, next) => {
+    try {
+        const rooms = await getAll();
+
+        res.status(200).json({ success: true, rooms });
     } catch (error) {
         next(error);
     }
@@ -61,68 +45,28 @@ const getRoomById = async (req, res, next) => {
  * @param {Function} next - The next middleware function
  */
 const createRoom = async (req, res, next) => {
+    console.log('Request body controller =>', req.body);
+
     try {
-        const { user, room_socket_id, name, tags } = req.body;
+        const room = await create(req.body);
 
-        const newTags = await createTagsFromRoom(tags);
-
-        const newRoom = new Room({
-            room_socket_id,
-            name,
-            admin: user,
-            participants: [{
-                user: user,
-                role: 'admin',
-            }],
-            tags: newTags,
-        });
-
-        await newRoom.save();
-
-        const room = await Room.findById(newRoom._id)
-            .select('_id room_socket_id name user tags room_settings participants')
-            .populate([
-                { path: 'room_settings', select: '_id max is_safe is_private' },
-                { path: 'tags', select: '_id name slug' },
-                { path: 'admin', select: '_id username' },
-                {
-                    path: 'participants.user',
-                    select: '_id username'
-                }
-            ])
-            .lean();
-
-        res.status(201).json({ success: true, room: room });
+        res.status(201).json({ success: true, room });
     } catch (error) {
         next(error);
     }
 };
 
 /**
- * Update a room
+ * Join a room
  * @param {Object} req - The request object
  * @param {Object} res - The response object
  * @param {Function} next - The next middleware function
  */
 const joinRoom = async (req, res, next) => {
     try {
-        const { user } = req.body;
+        const room = await join({ _id: req.params.id, user: req.body.user });
 
-        console.log('req.params.id =>', req.params.id);
-
-        const room = await Room.findByIdAndUpdate(req.params.id, {
-            $push:
-            {
-                participants: {
-                    user: user,
-                    role: 'troll'
-                }
-            }
-        }, { new: true });
-
-        if (!room) throw { statusCode: 404, message: 'Room not found' };
-
-        res.status(200).json({ success: true, room });
+        return res.status(200).json({ success: true, room });
     } catch (error) {
         next(error);
     }
@@ -136,9 +80,7 @@ const joinRoom = async (req, res, next) => {
  */
 const deleteRoom = async (req, res, next) => {
     try {
-        const room = await Room.findByIdAndDelete(req.params.id);
-
-        if (!room) throw { statusCode: 404, message: 'Room not found' };
+        const room = await remove(req.params.id);
 
         res.status(200).json({ success: true, room });
     } catch (error) {
@@ -156,9 +98,9 @@ module.exports = {
 
 
 // {
-//     "room_socket_id" : "211DDDD1DDDDDdDDDS1A",
-//         "user" : "67c5dbe3806a4fef1d0ee35d",
-//             "name" : "Room 91DDDADdDDDDDDSDA",
+//     "room_socket_id" : "21DDDDdDDDS1A",
+//         "user" : "67c72cdcfda87040021e6fbf",
+//             "name" : "Room 91DdDDDDDSDA",
 //                 "tags" : [
 //                     {
 //                         "name": "Hola"
@@ -169,5 +111,11 @@ module.exports = {
 //                     {
 //                         "name": "MongoDB"
 //                     }
-//                 ]
+//                 ],
+//                     "settings": {
+//         "max": 8,
+//             "is_safe": true,
+//                 "is_private": false,
+//                     "password": null
+//     }
 // }

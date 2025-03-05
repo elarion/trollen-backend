@@ -1,10 +1,11 @@
-const { formatMongooseErrors } = require("../utils/formatMongooseErrors");
+const formatMongooseErrors = require("../utils/formatMongooseErrors");
 // This middleware handles errors when they occur
 // How to use : 
 // 1. Import the middleware : const errorHandler = require("./middlewares/errorsHandler");
 // 2. Use the middleware in a route : router.use(errorHandler); 
 // at the top of the route after the const router = express.Router();
 // 2bis. Or directly in the app.js : app.use(errorHandler);
+
 const errorHandler = (err, req, res, next) => {
     // Error log to console on development
     // err.stack is the stack trace of the error not only the error message
@@ -17,8 +18,7 @@ const errorHandler = (err, req, res, next) => {
     //     at myRoute (path/to/myRoute.js:1:3)
     //     at myApp (path/to/myApp.js:1:3)
     //     at global (path/to/global.js:1:3)
-    console.log('In errorHandler middleware');
-    console.error(err.stack);
+    console.error('Error handler =>', err);
 
 
     // Handle mongoose validation errors

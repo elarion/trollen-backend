@@ -1,4 +1,4 @@
-const RoomSettings = require('../models/room_settings');
+const RoomSettings = require('../models/subdoc_room_settings');
 
 const createRoomSettingsFromRoom = async function (doc, next) {
     console.log('room settings =>', doc);
