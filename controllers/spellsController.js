@@ -25,11 +25,21 @@ const addSpell = async (req, res, next) => {
     }
 };
 
-const getSpell = async (req, res, next) => {
+const getAllSpells = async (req, res, next) => {
     try {
-        const {_id } = req.body;
+        let spells = await Spell.find()
+        res.status(201).json({ success: true, message: "Tous les spells sont invoqués!", spells})
 
-        let spell = await Spell.findById({ _id });
+    } catch (error){
+        next(error);
+    }
+};
+
+const getSpellById = async (req, res, next) => {
+    try {
+        const {_id } = req.params;
+
+        let spell = await Spell.findById({_id});
         if (!spell) throw {statusCode: 400, message: "Ce sort n'est pas utilisable"};
 
         res.status(201).json({ success: true, message: "Spell invoqué avec succès", spell})
@@ -55,6 +65,7 @@ const getSpellByRace = async (req, res, next) => {
 
 module.exports = {
     addSpell,
-    getSpell,
+    getAllSpells,
+    getSpellById,
     getSpellByRace,
 };
