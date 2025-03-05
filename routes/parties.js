@@ -5,7 +5,7 @@ const errorHandler = require("../middlewares/errorHandler")
 const validateRequest = require("../middlewares/validationRequest")
 
 router.get("/", validateRequest, allParties),
-router.get("/id", validateRequest, joinPartyById),
+router.get("/id", validateRequest, partyById),
 
 
 router.use(errorHandler);

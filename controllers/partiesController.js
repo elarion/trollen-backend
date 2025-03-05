@@ -22,8 +22,8 @@ const allParties = async (req, res, next) => {
         next(error);
     }
 };
-//Rejoindre une partie par son id
-const joinPartyById = async (req,res,next) => {
+//Recherche d'une partie par son id
+const partyById = async (req,res,next) => {
     try {
         const {id} = req.params;
         const party = await Parties.findById(id)
@@ -52,5 +52,5 @@ const joinPartyById = async (req,res,next) => {
 
 module.exports = {
     allParties,
-    joinPartyById
+    PartyById
 };
