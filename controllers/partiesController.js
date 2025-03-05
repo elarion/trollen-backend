@@ -48,9 +48,37 @@ const partyById = async (req,res,next) => {
     }
     
 }
+const joinPartyById = async (req, res, next) => {
+    try {
+        const { user } = req.body; 
+        const existingUser = await User.findById(user);
+        if (!existingUser) {
+            throw { statusCode: 404, message: 'User not found' };
+        }
+        const party = await Parties.findById(req.params.id);
+        const userAlreadyInParty = party.participants.some(participant => participant.user.toString() === user);
+
+        if (userAlreadyInParty) {
+            throw { statusCode: 400, message: 'User is already in this party' };
+        }
+        const updatedParty = await Parties.findByIdAndUpdate(
+            req.params.id, 
+            { $push: { participants: { user: user, role: 'troll' } } }, 
+            { new: true } 
+        );
+
+        if (!party) throw { statusCode: 404, message: 'Room not found' };
+
+        res.status(200).json({ success: true, updatedParty});
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 
 module.exports = {
     allParties,
-    PartyById
+    partyById,
+    joinPartyById
 };
