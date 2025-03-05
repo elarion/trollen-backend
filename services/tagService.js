@@ -33,7 +33,7 @@ const createTagsFromRoom = async function (tags = []) {
 
         return allTags.map(tag => tag._id);
     } catch (error) {
-        throw new Error({ statusCode: 500, message: 'Error while creating tags from room creation service' });
+        throw { statusCode: 500, message: 'Error while creating tags from room creation service', errors: error };
     }
 }
 
