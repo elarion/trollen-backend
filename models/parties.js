@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const SubdocPartyParticipants = require("./subdoc_party_participants");
+const SubdocPartyParticipantsSchema = require("./subdoc_party_participants");
 const partySchema = new mongoose.Schema({
-    
+
     _id: {
         type: mongoose.Schema.Types.ObjectId,
-        auto : true,
+        auto: true,
     },
 
     game: {
@@ -26,7 +26,7 @@ const partySchema = new mongoose.Schema({
         unique: true,
     },
 
-    participants: [SubdocPartyParticipants],
+    participants: [SubdocPartyParticipantsSchema],
 
 }, {
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
