@@ -45,8 +45,6 @@ const getAllRooms = async (req, res, next) => {
  * @param {Function} next - The next middleware function
  */
 const createRoom = async (req, res, next) => {
-    console.log('Request body controller =>', req.body);
-
     try {
         const room = await create(req.body);
 

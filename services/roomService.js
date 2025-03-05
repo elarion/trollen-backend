@@ -36,6 +36,7 @@ const getById = async (id) => {
 }
 
 const create = async (data) => {
+    // user is the id of the user who created the room
     const { user, room_socket_id, name, tags, settings = {} } = data;
 
     try {
@@ -72,7 +73,6 @@ const create = async (data) => {
 }
 
 const join = async ({ _id, user }) => {
-    console.log('in join =>', _id, user);
     try {
         const isExist = await Room.findById(_id).select('_id settings participants');
 

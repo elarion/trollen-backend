@@ -16,18 +16,11 @@ const createMessageRoom = async (req, res, next) => {
     const { user, room, party, content, spelled = null, spelled_by = null } = req.body;
 
     try {
-        const newMessage = new MessageRoom({
-            user,
-            room,
-            party,
-            content,
-            spelled,
-            spelled_by
-        });
+        const message = await create({ user, room, party, content, spelled, spelled_by });
 
-        return
+        return res.status(201).json({ success: true, message });
     } catch (error) {
-        throw { statusCode: error.statusCode, message: error.message || 'Error while creating message' };
+        throw { statusCode: error.statusCode, message: error.message || 'Error while creating message in messagesRoomsController' };
     }
 
 }
