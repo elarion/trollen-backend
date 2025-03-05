@@ -15,7 +15,7 @@ const errorHandler = require("../middlewares/errorHandler");
 router.get("/", getAllRooms); // Get all rooms
 router.get("/:id", getRoomById); // Get room by id
 router.post("/create", roomValidationRules(), validateRequest, createRoom); // Create room
-router.put("/:id", joinRoom); // Join a room
+router.put("/join/:id", joinRoom); // Join a room
 router.delete("/:id", deleteRoom); // Delete room
 
 router.use(errorHandler);
