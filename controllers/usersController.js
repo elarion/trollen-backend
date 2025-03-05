@@ -60,7 +60,7 @@ const signin = async (req, res, next) => {
             throw { statusCode: 400, message: "Mot de passe invalide" };
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        const token = jwt.sign({ id: user._id, username: user.username, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         res.status(200).json({ success: true, message: "Connexion réussie", token });
     } catch (error) {
