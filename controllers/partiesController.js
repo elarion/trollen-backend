@@ -1,10 +1,10 @@
-const Parties = require('../models/parties')
+const Party = require('../models/parties')
 const User = require("../models/users");
-const PartySession = require("../models/party_sessions");
+const PartySession = require("../models/parties_session");
 //affiche toutes les parties avec le nombre de participants, le jeu et le statut de la partie
 const allParties = async (req, res, next) => {
     try {
-        const parties = await Parties.find()
+        const parties = await Party.find()
             .select('_id party_socket_id name game participants createdAt')
             .populate([
                 { path: 'game', select: 'name' },
@@ -26,7 +26,7 @@ const allParties = async (req, res, next) => {
 const partyById = async (req,res,next) => {
     try {
         const {id} = req.params;
-        const party = await Parties.findById(id)
+        const party = await Party.findById(id)
         .populate([
             {path: 'game', select: 'name'},
             { path: "participants.user", select: "username" } 
@@ -48,6 +48,7 @@ const partyById = async (req,res,next) => {
     }
     
 }
+
 const joinPartyById = async (req, res, next) => {
     try {
         const { user } = req.body; 
@@ -55,13 +56,13 @@ const joinPartyById = async (req, res, next) => {
         if (!existingUser) {
             throw { statusCode: 404, message: 'User not found' };
         }
-        const party = await Parties.findById(req.params.id);
+        const party = await Party.findById(req.params.id);
         const userAlreadyInParty = party.participants.some(participant => participant.user.toString() === user);
 
         if (userAlreadyInParty) {
             throw { statusCode: 400, message: 'User is already in this party' };
         }
-        const updatedParty = await Parties.findByIdAndUpdate(
+        const updatedParty = await Party.findByIdAndUpdate(
             req.params.id, 
             { $push: { participants: { user: user, role: 'troll' } } }, 
             { new: true } 
@@ -75,10 +76,43 @@ const joinPartyById = async (req, res, next) => {
     }
 };
 
+// Création d'une partie
+const createParty = async (req, res, next) => {
+    try {
+        const { name, game, user, party_socket_id } = req.body;
+
+        if (!name || !game || !user || !party_socket_id) {
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
+        }
+
+        const newParty = new Party({
+            name,
+            game,
+            party_socket_id,
+            participants: [{
+                user: user,
+                role: 'gamemaster',  
+                status: 'online'
+            }],
+        });
+
+        await newParty.save();
+
+        res.status(201).json({ success: true, party: newParty });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+
+
 
 
 module.exports = {
     allParties,
     partyById,
-    joinPartyById
+    joinPartyById,
+    createParty
 };
