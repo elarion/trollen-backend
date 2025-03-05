@@ -79,7 +79,7 @@ const partySessionSchema = new mongoose.Schema({
         
 	},
 
-    actions: actionSchema,
+    actions: [actionSchema],
 
 }, {
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"

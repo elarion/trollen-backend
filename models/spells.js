@@ -22,16 +22,21 @@ const levelSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-
-    cooldown:{
+    
+    using_count: {      //ajout
         type: Number,
-        require: true,
+        default: 0
+    }, 
+    
+    cooldown: {
+        type: Number,
+        //required: true,
         default: 0
     },
 
-    target:{
+    target: {
         type: String,
-        enum: ["zone", "ennemy", "choice"]
+        enum: ["zone", "ennemy", "choice", "self"] //ajout self pour les passive spells
     },
 
     damage: {
@@ -80,7 +85,7 @@ const spellSchema = new mongoose.Schema({
     races: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'races',
-        required: true,
+        //required: true,
     }],
 
     levels: [levelSchema],
