@@ -5,7 +5,7 @@ const PartySession = require("../models/party_sessions");
 const allParties = async (req, res, next) => {
     try {
         const parties = await Parties.find()
-            .select('_id party_socket_id name game participants')
+            .select('_id party_socket_id name game participants createdAt')
             .populate([
                 { path: 'game', select: 'name' },
                 { path: "participants.user", select: "username" } 
@@ -15,15 +15,42 @@ const allParties = async (req, res, next) => {
             const partySession = await PartySession.findOne
             ({ party: party._id }).select("status")
             party.playerOnline = playerOnline;
-            party.isWaiting = partySession ?.status;
+            party.partyStatus = partySession ?.status;
             }
         res.status(200).json({ success: true, parties});
     } catch (error) {
         next(error);
     }
 };
+//Rejoindre une partie par son id
+const joinPartyById = async (req,res,next) => {
+    try {
+        const {id} = req.params;
+        const party = await Parties.findById(id)
+        .populate([
+            {path: 'game', select: 'name'},
+            { path: "participants.user", select: "username" } 
+        ]);
+        if (!party) {
+            throw { statusCode: 404, message: "Party not found" }; 
+        }
+        const partySession = await PartySession.findOne({ party: party._id })
+        .select("status turn_number current_turn turn_order");
+
+        party.status = partySession?.status || 'waiting'; 
+        party.turnNumber = partySession?.turn_number || 1; 
+        party.currentTurn = partySession?.current_turn || null; 
+        party.turnOrder = partySession?.turn_order || [];
+
+        res.status(200).json({ success: true, party });
+    } catch (error) {
+        next(error);
+    }
+    
+}
 
 
 module.exports = {
-    allParties
+    allParties,
+    joinPartyById
 };
