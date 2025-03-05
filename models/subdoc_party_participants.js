@@ -38,7 +38,5 @@ const subdocPartyParticipantsSchema = mongoose.Schema({
 //  pour éviter la redondance
 // userHasPartieSchema.index({ user: 1, party: 1 }, { unique: true });
 
-const SubdocPartyParticipants= mongoose.model('subdocPartiesParticipants', subdocPartyParticipantsSchema);
-
 // Export du modèle SubdocPartyParticipants
-module.exports = SubdocPartyParticipants;
+module.exports = subdocPartyParticipantsSchema;
