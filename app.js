@@ -21,6 +21,7 @@ const spellsRouter = require('./routes/spells');
 const roomsRouter = require('./routes/rooms');
 const partiesRouter = require('./routes/parties');
 const gamesRouter = require('./routes/games');
+const messagesRoomsRouter = require('./routes/messages_rooms');
 /** END OF Routes */
 
 var app = express();
@@ -44,4 +45,5 @@ app.use('/spells', spellsRouter);
 app.use('/rooms', roomsRouter);
 app.use('/parties', partiesRouter);
 app.use('/games', gamesRouter);
+app.use('/messages-rooms', messagesRoomsRouter);
 module.exports = app;

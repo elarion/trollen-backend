@@ -68,6 +68,7 @@ const create = async (data) => {
 
         return room;
     } catch (error) {
+        console.error(error);
         throw { statusCode: error.statusCode, message: error.message || 'Error while creating a room' };
     }
 }
