@@ -23,7 +23,7 @@ const levelSchema = new mongoose.Schema({
         required: true,
     },
     
-    using_stack: {      //ajout
+    using_count: {      //ajout
         type: Number,
         default: 0
     }, 
@@ -85,7 +85,7 @@ const spellSchema = new mongoose.Schema({
     races: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'races',
-        required: true,
+        //required: true,
     }],
 
     levels: [levelSchema],
