@@ -15,9 +15,9 @@ const create = async (name) => {
     }
 }
 
-const createTagsFromRoom = async function (tags = []) {
+const createTagsFromRoom = async function (tags) {
     try {
-        if (tags.length === 0) return null;
+        if (tags.length === 0 || !tags) return null;
 
         tags = tags.split(',').map(tag => ({ name: tag.trim() }));
 
