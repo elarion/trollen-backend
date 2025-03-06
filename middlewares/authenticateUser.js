@@ -1,18 +1,35 @@
 const jwt = require("jsonwebtoken");
 
 const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers["authorization"]; // get authorization header
-    const token = authHeader && authHeader.split(" ")[1]; // get token from authorization header
+    try {
+        // Vérifier si l'Authorization header est présent
+        const authHeader = req.headers["authorization"];
+        if (!authHeader) {
+            return res.status(401).json({ message: "Access denied, no token provided" });
+        }
 
-    if (!token) return res.status(401).json({ message: "Access denied" });
+        // Extraire le token de l'en-tête
+        const token = authHeader.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ message: "Access denied, invalid token format" });
+        }
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ message: "Invalid or expired token" });
+        // Vérifier et décoder le token JWT
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+            if (err) {
+                return res.status(403).json({ message: "Invalid or expired token" });
+            }
 
-        req.user = user;
+            // Ajouter les infos de l'utilisateur à `req.user`
+            req.user = decoded;
 
-        next();
-    });
+            // Passer au middleware suivant
+            next();
+        });
+    } catch (error) {
+        console.error("Error in authenticateToken middleware:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 };
 
 module.exports = authenticateToken;

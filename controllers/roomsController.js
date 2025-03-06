@@ -1,6 +1,7 @@
 const {
     getAll,
     getById,
+    getByLimit,
     create,
     join,
     remove
@@ -22,6 +23,19 @@ const getRoomById = async (req, res, next) => {
         next(error);
     }
 };
+
+const getRoomsByLimit = async (req, res, next) => {
+    try {
+        if (!req.query.page || !req.query.limit) throw new CustomError('Please provide ?page=<nextpagenumber>&limit=25 in query params of your fetch', 400);
+
+        const rooms = await getByLimit(req.query);
+
+        res.status(200).json({ success: true, rooms });
+    } catch (error) {
+        next(error)
+    }
+}
+
 /**
  * Get all rooms
  * @param {Object} req - The request object
@@ -89,6 +103,7 @@ const deleteRoom = async (req, res, next) => {
 module.exports = {
     getAllRooms,
     getRoomById,
+    getRoomsByLimit,
     createRoom,
     joinRoom,
     deleteRoom
