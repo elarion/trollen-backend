@@ -79,9 +79,9 @@ const joinPartyById = async (req, res, next) => {
 // Création d'une partie
 const createParty = async (req, res, next) => {
     try {
-        const { name, game, user, party_socket_id } = req.body;
+        const { name, game, user,party_socket_id} = req.body;
 
-        if (!name || !game || !user || !party_socket_id) {
+        if (!name || !game || !user) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
 
