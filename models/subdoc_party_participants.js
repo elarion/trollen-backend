@@ -25,7 +25,7 @@ const subdocPartyParticipantsSchema = mongoose.Schema({
     // Statut de l'utilisateur dans la party
     status: {
         type: String,
-        enum: ['online', 'disconnected', 'reconnecting', 'afk'], // Statuts possibles
+        enum: ['online', 'disconnected', 'reconnecting', 'afk','pending'], // Statuts possibles
         required: true,
         default: 'pending', // Par défaut, il est en attente d’initialisation
     },
@@ -38,9 +38,5 @@ const subdocPartyParticipantsSchema = mongoose.Schema({
 //  pour éviter la redondance
 // userHasPartieSchema.index({ user: 1, party: 1 }, { unique: true });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> d33cc832d70db445a20a63c982103d1e5c806a6f
 // Export du modèle SubdocPartyParticipants
 module.exports = subdocPartyParticipantsSchema;
