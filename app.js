@@ -11,6 +11,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require("cors");
 
+// Load custom error
+require("./utils/CustomError");
+
 /** Routes */
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
