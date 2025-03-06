@@ -35,6 +35,27 @@ const getById = async (id) => {
     }
 }
 
+const getByLimit = async ({ page = Number(page) || 1, limit = Number(limit) || 25 }) => {
+    try {
+        const skip = (page - 1) * limit;
+
+        const rooms = await Room.find()
+            .skip(skip)
+            .limit(limit)
+            .select('_id room_socket_id name user tags settings participants')
+            .populate([
+                { path: 'tags', select: '_id name slug' },
+                { path: 'admin', select: '_id username' },
+                { path: 'participants.user', select: '_id username email' }
+            ]);
+
+        return rooms
+    } catch (error) {
+        throw error;
+    }
+}
+
+
 const create = async (data) => {
     // user is the id of the user who created the room
     const { user, room_socket_id, name, tags, settings = {} } = data;
@@ -119,6 +140,7 @@ const remove = async (_id) => {
 module.exports = {
     getAll,
     getById,
+    getByLimit,
     create,
     join,
     remove

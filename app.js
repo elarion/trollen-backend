@@ -50,5 +50,5 @@ app.use('/rooms', roomsRouter);
 app.use('/parties', partiesRouter);
 app.use('/games', gamesRouter);
 app.use('/messages-rooms', messagesRoomsRouter);
-app.use('/parties-session', partiesSessionRouter);
+// app.use('/parties-session', partiesSessionRouter);
 module.exports = app;
