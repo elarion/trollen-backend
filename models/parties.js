@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+const SubdocPartyParticipantsSchema = require("./subdoc_party_participants");
 const subdocPartyParticipantsSchema = require("./subdoc_party_participants");
 const partySchema = new mongoose.Schema({
-    
+
     _id: {
         type: mongoose.Schema.Types.ObjectId,
-        auto : true,
+        auto: true,
     },
 
     game: {
@@ -26,6 +27,7 @@ const partySchema = new mongoose.Schema({
         unique: true,
     },
 
+    participants: [SubdocPartyParticipantsSchema],
     participants: [subdocPartyParticipantsSchema],
 
 }, {

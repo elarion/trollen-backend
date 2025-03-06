@@ -8,22 +8,22 @@ const allParties = async (req, res, next) => {
             .select('_id party_socket_id name game participants createdAt')
             .populate([
                 { path: 'game', select: 'name' },
-                { path: "participants.user", select: "username" } 
+                { path: "participants.user", select: "username" }
             ]);
-            for (let party of parties) {
+        for (let party of parties) {
             const playerOnline = party.participants.filter(participant => participant.status === 'online').length;
             const partySession = await PartySession.findOne
-            ({ party: party._id }).select("status")
+                ({ party: party._id }).select("status")
             party.playerOnline = playerOnline;
-            party.partyStatus = partySession ?.status;
-            }
-        res.status(200).json({ success: true, parties});
+            party.partyStatus = partySession?.status;
+        }
+        res.status(200).json({ success: true, parties });
     } catch (error) {
         next(error);
     }
 };
 //Recherche d'une partie par son id
-const partyById = async (req,res,next) => {
+const partyById = async (req, res, next) => {
     try {
         const {id} = req.params;
         const party = await Party.findById(id)
@@ -32,26 +32,26 @@ const partyById = async (req,res,next) => {
             { path: "participants.user", select: "username" } 
         ]);
         if (!party) {
-            throw { statusCode: 404, message: "Party not found" }; 
+            throw { statusCode: 404, message: "Party not found" };
         }
         const partySession = await PartySession.findOne({ party: party._id })
-        .select("status turn_number current_turn turn_order");
+            .select("status turn_number current_turn turn_order");
 
-        party.status = partySession?.status || 'waiting'; 
-        party.turnNumber = partySession?.turn_number || 1; 
-        party.currentTurn = partySession?.current_turn || null; 
+        party.status = partySession?.status || 'waiting';
+        party.turnNumber = partySession?.turn_number || 1;
+        party.currentTurn = partySession?.current_turn || null;
         party.turnOrder = partySession?.turn_order || [];
 
         res.status(200).json({ success: true, party });
     } catch (error) {
         next(error);
     }
-    
+
 }
 
 const joinPartyById = async (req, res, next) => {
     try {
-        const { user } = req.body; 
+        const { user } = req.body;
         const existingUser = await User.findById(user);
         if (!existingUser) {
             throw { statusCode: 404, message: 'User not found' };
@@ -70,7 +70,7 @@ const joinPartyById = async (req, res, next) => {
 
         if (!party) throw { statusCode: 404, message: 'Room not found' };
 
-        res.status(200).json({ success: true, updatedParty});
+        res.status(200).json({ success: true, updatedParty });
     } catch (error) {
         next(error);
     }

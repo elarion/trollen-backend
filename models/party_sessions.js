@@ -85,6 +85,6 @@ const partySessionSchema = new mongoose.Schema({
     timestamps: true // Ajoute automatiquement les champs "createdAt" et "updatedAt"
 });
 
-const PartySession = mongoose.model('parties_session', partySessionSchema);
+const PartySession = mongoose.model('party_sessions', partySessionSchema);
 
 module.exports = PartySession;

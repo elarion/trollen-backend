@@ -45,8 +45,6 @@ const getAllRooms = async (req, res, next) => {
  * @param {Function} next - The next middleware function
  */
 const createRoom = async (req, res, next) => {
-    console.log('Request body controller =>', req.body);
-
     try {
         const room = await create(req.body);
 
@@ -64,7 +62,7 @@ const createRoom = async (req, res, next) => {
  */
 const joinRoom = async (req, res, next) => {
     try {
-        const room = await join({ _id: req.params.id, user: req.body.user });
+        const room = await join({ _id: req.params.id, user: req.body.user, password: req.body.password });
 
         return res.status(200).json({ success: true, room });
     } catch (error) {

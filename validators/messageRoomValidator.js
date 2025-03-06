@@ -8,4 +8,4 @@ const messageRoomValidationRules = () => [
     body('spelled_by').optional().isMongoId(),
 ];
 
-module.exports = { roomValidationRules };
+module.exports = { messageRoomValidationRules };
