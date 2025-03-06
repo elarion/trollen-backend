@@ -75,10 +75,12 @@ const create = async (data) => {
 const join = async ({ _id, user, password = '' }) => {
     try {
         // Check if the room exists
-        const isExist = await Room.findById(_id).select('_id settings participants').populate('participants.user');
+        const isExist = await Room.findById(_id).select('_id settings participants');
         if (!isExist) throw new CustomError('Room not found', 404);
 
-        if (isExist.settings.password && !(await isExist.comparePassword(password))) throw new CustomError('Password is incorrect', 403);
+        // Check if the room is password protected
+        if (isExist.settings.password && !(await isExist.comparePassword(password)))
+            throw new CustomError('Password is incorrect', 423);
 
         // Check if the room is full
         if (isExist.settings.max > 0 && isExist.settings.max === isExist.participants.length)
@@ -86,7 +88,6 @@ const join = async ({ _id, user, password = '' }) => {
         // Check if the user is already in the room
         const isAlreadyIn = isExist.participants.some(participant => participant.user.toString() === user);
         if (isAlreadyIn) throw new CustomError('User already in room', 400);
-
 
         const room = await Room.updateOne({ _id }, {
             $push:
