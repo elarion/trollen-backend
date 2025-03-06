@@ -10,7 +10,7 @@ router.get("/", validateRequest, allParties),
 router.get("/:id", validateRequest, partyById),
 router.post("/", validateRequest, createParty),
 router.put("/:id", validateRequest,joinPartyById);
-router.post("/", validateRequest, joinParty), //matchmaking
+router.post("/join", validateRequest, joinParty), //matchmaking
 
 
 

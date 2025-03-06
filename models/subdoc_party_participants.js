@@ -25,7 +25,7 @@ const subdocPartyParticipantsSchema = mongoose.Schema({
     // Statut de l'utilisateur dans la party
     status: {
         type: String,
-        enum: ['online', 'disconnected', 'reconnecting', 'afk'], // Statuts possibles
+        enum: ['online', 'disconnected', 'reconnecting', 'afk','pending'], // Statuts possibles
         required: true,
         default: 'pending', // Par défaut, il est en attente d’initialisation
     },

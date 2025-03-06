@@ -5,8 +5,9 @@ const PartySession = require("../models/parties_session");
 const startParty = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const party = await Party.findById(id);
-
+        const party = await Party.findById(id)
+        .populate('game', 'min max')
+        ;
         if (!party) {
             return res.status(404).json({ success: false, message: "Party not found" });
         }

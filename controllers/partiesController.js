@@ -118,12 +118,12 @@ const joinParty = async (req, res, next) => {
 
         const parties = await Party.find({
             game: { $in: games },
-            status: "waiting",
+            // status: "waiting",
             'participants.user': { $ne: user } 
         })
         .populate('game', 'min max')
         .populate('participants.user', 'username'); 
-
+        console.log(parties);
         let minMissingPlayers = null;
         let bestParty = null;
 
