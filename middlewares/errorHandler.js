@@ -3,10 +3,29 @@ const formatMongooseErrors = require("../utils/formatMongooseErrors");
 // How to use : 
 // 1. Import the middleware : const errorHandler = require("./middlewares/errorsHandler");
 // 2. Use the middleware in a route : router.use(errorHandler); 
-// at the top of the route after the const router = express.Router();
+// at the bottom of the route after the last route and before the export
 // 2bis. Or directly in the app.js : app.use(errorHandler);
 
 const errorHandler = (err, req, res, next) => {
+    console.log('Error handler =>', err);
+    // Normalize the error object when it's not an instance of Error
+    // That is to say: if the error is not an instance of the Error class, tout simplement
+    // It means for example that if we throw an object like { message: "Error message", statusCode: 400 }
+    // It will be converted to an instance of the Error class with the message and statusCode properties
+    // If you want to test it, you can do the following in a route for example:
+    // res.status(400).json({ message: "Error message", statusCode: 400 });
+    // another way to test it is to throw an object in a try block in an async function for example:
+    // throw { message: "Error message", statusCode: 400 };
+    // It will be converted to an instance of the Error class with the message and statusCode properties
+    // because I want to have a consistent error object to work with
+    if (!(err instanceof Error)) {
+        const { message, statusCode, errors } = err;
+        err = new Error(message || "Internal Server Error");
+        err.statusCode = statusCode || 500;
+        err.errors = errors || [];
+        Error.captureStackTrace(err, errorHandler);
+    }
+
     // Error log to console on development
     // err.stack is the stack trace of the error not only the error message
     // So we can have a better understanding of where the error occured
@@ -18,34 +37,7 @@ const errorHandler = (err, req, res, next) => {
     //     at myRoute (path/to/myRoute.js:1:3)
     //     at myApp (path/to/myApp.js:1:3)
     //     at global (path/to/global.js:1:3)
-    console.error('Error handler =>', err);
-
-
-    // Handle mongoose validation errors
-    if (err.name === "ValidationError") {
-        return res.status(400).json({
-            success: false,
-            message: "Mongoose validation error",
-            errors: formatMongooseErrors(err),
-        });
-        // Handle mongoose cast error (invalid type)
-    } else if (err.name === "CastError") {
-        return res.status(400).json({
-            success: false,
-            message: "Mongoose invalid type value",
-            errors: [{ field: err.path, message: "This field has an invalid type value" }],
-        });
-    }
-
-    // Handle mongoose duplicate key error
-    if (err.code === 11000) {
-        return res.status(400).json({
-            success: false,
-            message: "Mongoose duplicate key error.",
-            // Extract the field name from the error object because the error for duplicate key is different from the validation or cast error
-            errors: [{ field: Object.keys(err.keyPattern)[0], message: "This field must be unique." }],
-        });
-    }
+    console.error('Stack trace =>', err.stack);
 
     // Return formatted error if not a mongoose one
     res.status(err.statusCode || 500).json({
