@@ -13,7 +13,7 @@ const getAll = async () => {
 
         return rooms;
     } catch (error) {
-        throw { statusCode: error.statusCode, message: error.message || 'Error while getting all rooms' };
+        throw error;
     }
 };
 
@@ -27,11 +27,11 @@ const getById = async (id) => {
                 { path: 'participants.user', select: '_id username' }
             ]);
 
-        if (!room) throw { statusCode: 404, message: 'Room not found' };
+        if (!room) throw new CustomError('Room not foundsss', 404);
 
         return room;
     } catch (error) {
-        throw { statusCode: error.statusCode, message: error.message || 'Error while getting room by id' };
+        throw error;
     }
 }
 
@@ -68,20 +68,24 @@ const create = async (data) => {
 
         return room;
     } catch (error) {
-        console.error(error);
-        throw { statusCode: error.statusCode, message: error.message || 'Error while creating a room' };
+        throw error;
     }
 }
 
-const join = async ({ _id, user }) => {
+const join = async ({ _id, user, password = '' }) => {
     try {
-        const isExist = await Room.findById(_id).select('_id settings participants');
+        // Check if the room exists
+        const isExist = await Room.findById(_id).select('_id settings participants').populate('participants.user');
+        if (!isExist) throw new CustomError('Room not found', 404);
 
-        if (!isExist) throw { statusCode: 404, message: 'Room not found' };
+        if (isExist.settings.password && !(await isExist.comparePassword(password))) throw new CustomError('Password is incorrect', 403);
 
+        // Check if the room is full
+        if (isExist.settings.max > 0 && isExist.settings.max === isExist.participants.length)
+            throw new CustomError('Room is full', 400);
+        // Check if the user is already in the room
         const isAlreadyIn = isExist.participants.some(participant => participant.user.toString() === user);
-        if (isAlreadyIn) throw { statusCode: 400, message: 'User already in room' };
-        if (isExist.settings.max === isExist.participants.length) throw { statusCode: 400, message: 'Room is full' };
+        if (isAlreadyIn) throw new CustomError('User already in room', 400);
 
 
         const room = await Room.updateOne({ _id }, {
@@ -92,22 +96,22 @@ const join = async ({ _id, user }) => {
                     role: 'troll'
                 }
             }
-        }, { new: true }); // new: true pour retourner le document après update
+        }, { new: true }); // mémo: new true pour retourner le document après update
 
-        return room
+        return room;
     } catch (error) {
-        throw { statusCode: error.statusCode, message: error.message || 'Error while joining a room' };
+        throw error;
     }
 }
 
 const remove = async (_id) => {
     try {
         const room = await Room.findOneAndDelete({ _id });
-        if (!room) throw { statusCode: 404, message: 'Room not found' };
+        if (!room) throw new CustomError('Room not found', 404);
 
         return room
     } catch (error) {
-        throw { statusCode: error.statusCode, message: error.message || 'Error while deleting a room' };
+        throw error;
     }
 }
 

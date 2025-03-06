@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
-const { createUserHasRoom } = require('../controllers/usersHasRoomsController');
-// const { createRoomSettingsFromRoom } = require('../controllers/roomSettingsController');
 const roomSettingSchema = require('./subdoc_room_settings');
 const participantSchema = require('./subdoc_room_participants');
-
+const bcryptjs = require('bcryptjs');
 
 const roomSchema = new mongoose.Schema({
     // Identifiant unique de la salle
@@ -17,7 +15,7 @@ const roomSchema = new mongoose.Schema({
         type: String,
         required: true, // Ce champ est obligatoire
         unique: true,  // Il doit être unique pour éviter les conflits
-        index: true,   // Accélère les recherches basées sur cet ID
+        index: true,  // Accélère les recherches basées sur le room socket id
     },
 
     admin: {
@@ -54,6 +52,23 @@ const roomSchema = new mongoose.Schema({
         ref: 'tags',  // Référence vers la collection `tags`
     }],
 }, { timestamps: true });
+
+roomSchema.pre('save', async function (next) {
+    try {
+        if (this.settings.password) {
+            const salt = await bcryptjs.genSalt(10);
+            this.settings.password = await bcryptjs.hash(this.settings.password, salt);
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
+roomSchema.methods.comparePassword = async function (enteredPassword) {
+    return await bcryptjs.compare(enteredPassword, this.settings.password);
+};
 
 const Room = mongoose.model('rooms', roomSchema);
 

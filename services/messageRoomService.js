@@ -1,5 +1,6 @@
 const messageRoom = require('../models/messages_rooms');
 const Room = require('../models/rooms');
+const CustomError = require('../utils/CustomError');
 const { isUserInRoom } = require('./userService');
 
 const getAllByRoomId = async (room) => {
@@ -18,11 +19,11 @@ const create = async (data) => {
     const { room, user, content, spelled = null, spelled_by = null } = data;
 
     try {
-        console.log(data);
         const isRoomExists = await Room.findById(room).select('_id');
-        const isUserExistInRoom = await isUserInRoom(room, user);
-        console.log(isUserExistInRoom);
-        if (!isRoomExists) throw { statusCode: 404, message: 'Room not found' };
+        if (!isRoomExists) throw new CustomError('Room not found', 404);
+
+        const isUserExistsInRoom = await isUserInRoom(room, user);
+        if (!isUserExistsInRoom) throw new CustomError('User not found in this room', 404);
 
         const newMessage = new messageRoom({
             room,
@@ -36,7 +37,7 @@ const create = async (data) => {
 
         return newMessage;
     } catch (error) {
-        throw { statusCode: error.statusCode, message: error.message || 'Error while creating message in messageRoomService' };
+        throw error;
     }
 }
 
