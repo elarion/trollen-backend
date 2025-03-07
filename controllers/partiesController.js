@@ -2,6 +2,9 @@ const Party = require('../models/parties')
 const User = require("../models/users");
 const PartySession = require("../models/parties_session");
 const Game = require("../models/games");
+const uid2 = require("uid2");
+const crypto = require('crypto');
+
 
 //affiche toutes les parties avec le nombre de participants, le jeu et le statut de la partie
 const allParties = async (req, res, next) => {
@@ -51,28 +54,33 @@ const partyById = async (req, res, next) => {
 
 }
 
-const joinPartyById = async (req, res, next) => {
+const joinPartyByJoinId = async (req, res, next) => {
     try {
-        const { user } = req.body;
+        const { user, join_id } = req.body;
         const existingUser = await User.findById(user);
         if (!existingUser) {
             throw { statusCode: 404, message: 'User not found' };
         }
-        const party = await Party.findById(req.params.id);
+        const party = await Party.findOne({ join_id });
+        if (!party) {
+            return res.status(404).json({ message: 'Party not found' });
+        }
         const userAlreadyInParty = party.participants.some(participant => participant.user.toString() === user);
 
         if (userAlreadyInParty) {
             throw { statusCode: 400, message: 'User is already in this party' };
         }
         const updatedParty = await Party.findByIdAndUpdate(
-            req.params.id, 
+            party._id, 
             { $push: { participants: { user: user, role: 'troll' } } }, 
             { new: true } 
         );
 
-        if (!party) throw { statusCode: 404, message: 'Room not found' };
+        if (!updatedParty) {
+            return res.status(500).json({ message: 'Failed to update party' });
+        }
 
-        res.status(200).json({ success: true, updatedParty });
+        res.status(200).json({ success: true, party: updatedParty });
     } catch (error) {
         next(error);
     }
@@ -80,17 +88,29 @@ const joinPartyById = async (req, res, next) => {
 
 // Création d'une partie
 const createParty = async (req, res, next) => {
+    const generateNumericId = (length) => Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
     try {
-        const { name, game, user,party_socket_id} = req.body;
+        const { name, game, user,party_socket_id} = req.body
 
         if (!name || !game || !user) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
+        const populatedUser = await User.findById(user).select('username');
+        if (!populatedUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        const gameData = await Game.findOne({ name: game }).select('_id');
+        if (!gameData) {
+            return res.status(404).json({ success: false, message: 'Game not found' });
+        }
+        const username = populatedUser.username;
+
 
         const newParty = new Party({
             name,
-            game,
+            game:gameData._id,
             party_socket_id,
+            join_id: `${username}#${generateNumericId(5)}`,
             participants: [{
                 user: user,
                 role: 'gamemaster',  
@@ -123,7 +143,7 @@ const joinParty = async (req, res, next) => {
         })
         .populate('game', 'min max')
         .populate('participants.user', 'username'); 
-        console.log(parties);
+    
         let minMissingPlayers = null;
         let bestParty = null;
 
@@ -163,7 +183,7 @@ const joinParty = async (req, res, next) => {
 module.exports = {
     allParties,
     partyById,
-    joinPartyById,
+    joinPartyByJoinId,
     createParty,
     joinParty
 };
