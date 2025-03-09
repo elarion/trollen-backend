@@ -11,7 +11,7 @@ const validateRequest = (req, res, next) => {
         // I believe it's two different things.
         return res.status(400).json({
             success: false,
-            message: 'Validation failed',
+            message: 'Form validation failed',
             errors: errors.array()
         });
     }

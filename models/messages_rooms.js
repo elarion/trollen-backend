@@ -43,11 +43,6 @@ const messageRoomSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-// Index unique pour éviter d'avoir un message référencé à la fois dans `rooms` et `parties`
-// Etant donné que room_id et party_id sont "optionnels" dans un cas ou dans un autre, on indique sparse : true 
-// Pour les retiré de l'index pour l'un des champs qui sera null
-messageRoomSchema.index({ room: 1, party: 1 }, { sparse: true });
-
 const MessageRoom = mongoose.model('messages_rooms', messageRoomSchema);
 
 module.exports = MessageRoom;
