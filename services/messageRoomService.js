@@ -7,7 +7,8 @@ const getAllByRoomId = async (room) => {
     try {
         const messages = await messageRoom
             .find({ room })
-            .populate('user');
+            .populate('user')
+            .sort({ createdAt: -1 });
 
         return messages;
     } catch (error) {
@@ -16,24 +17,26 @@ const getAllByRoomId = async (room) => {
 }
 
 const create = async (data) => {
-    const { room, user, content, spelled = null, spelled_by = null } = data;
+    const { roomId, userId, content, spelled = null, spelled_by = null } = data;
 
     try {
-        const isRoomExists = await Room.findById(room).select('_id');
+        const isRoomExists = await Room.findById(roomId).select('_id');
         if (!isRoomExists) throw new CustomError('Room not found', 404);
 
-        const isUserExistsInRoom = await isUserInRoom(room, user);
+        const isUserExistsInRoom = await isUserInRoom(roomId, userId);
         if (!isUserExistsInRoom) throw new CustomError('User not found in this room', 404);
 
-        const newMessage = new messageRoom({
-            room,
-            user,
+        let newMessage = new messageRoom({
+            room: roomId,
+            user: userId,
             content,
             spelled,
             spelled_by
         });
 
         await newMessage.save();
+
+        newMessage = await newMessage.populate('user');
 
         return newMessage;
     } catch (error) {

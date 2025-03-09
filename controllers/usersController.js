@@ -2,10 +2,15 @@ const User = require("../models/users");
 const jwt = require("jsonwebtoken");
 const uid2 = require("uid2");
 const { createCharacterFromSignup } = require("./charactersController");
+const { generateAccessToken, generateRefreshToken } = require("../utils/token");
 
 
-const preSignup = async (req, res) => {
-    res.status(201).json({ success: true });
+const preSignup = async (req, res, next) => {
+    try {
+        res.status(201).json({ success: true, user: req.body });
+    } catch (error) {
+        next(error);
+    }
 };
 
 /**
@@ -15,15 +20,10 @@ const signup = async (req, res, next) => {
     try {
         const { username, email, password, gender, race, avatar } = req.body;
 
-        let user = await User.findOne({ email });
-        if (user) throw { statusCode: 400, message: "Cet email est déjà utilisé" };
-
-        user = new User({
+        const user = new User({
             username,
             email,
             password,
-            refresh_token: uid2(32),
-            socket_id: uid2(32),
         });
 
         await user.save();
@@ -35,9 +35,13 @@ const signup = async (req, res, next) => {
         // - The payload : the data we want to store in the token { id: user._id }
         // - The signature : a secret key to verify the token process.env.JWT_SECRET
         // - The expiration : the date of the token's expiration { expiresIn: env.JWT_EXPIRATION_TIME }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
 
-        res.status(201).json({ success: true, message: "Utilisateur créé avec succès", token, user, character });
+        user.refresh_token = refreshToken;
+        await user.save();
+
+        res.status(201).json({ success: true, message: "Utilisateur créé avec succès", accessToken, refreshToken, user, character });
     } catch (error) {
         next(error);
     }
@@ -51,18 +55,18 @@ const signin = async (req, res, next) => {
         const { username, password, email } = req.body;
         const user = await User.findOne({ $or: [{ username }, { email }] });
 
-        if (!user) {
-            throw { statusCode: 400, message: "Utilisateur non trouvé" };
-        }
+        if (!user) throw new CustomError("Username or email is invalid", 400);
 
         const check = await user.comparePassword(password);
-        if (!check) {
-            throw { statusCode: 400, message: "Mot de passe invalide" };
-        }
+        if (!check) throw new CustomError("Password incorrect", 400);
 
-        const token = jwt.sign({ id: user._id, username: user.username, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
 
-        res.status(200).json({ success: true, message: "Connexion réussie", token });
+        user.refresh_token = refreshToken;
+        await user.save();
+
+        res.status(200).json({ success: true, message: "Connexion réussie", accessToken, refreshToken, user });
     } catch (error) {
         next(error);
     }
@@ -88,9 +92,30 @@ const signupGuest = async (req, res, next) => {
     }
 };
 
+const logout = async (req, res, next) => {
+    try {
+        const { refreshToken: refresh_token } = req.body;
+        if (!refresh_token) {
+            return res.status(400).json({ message: "Aucun token fourni" });
+        }
+
+        // Suppression du token en base de données
+        // on utilise $unset pour supprimer le champ refreshToken, cela veut dire qu'il disparait de la base de données
+        // mais on pourrait aussi faire 
+        await User.updateOne({ refresh_token }, { $unset: { refresh_token: 1 } });
+
+        return res.status(200).json({ message: "Déconnexion réussie" });
+    } catch (error) {
+        console.error("Erreur lors de la déconnexion :", error);
+        return res.status(500).json({ message: "Erreur interne du serveur" });
+    }
+
+}
+
 module.exports = {
     preSignup,
     signup,
     signin,
-    signupGuest
+    signupGuest,
+    logout,
 };
