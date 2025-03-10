@@ -15,7 +15,7 @@ const roomSchema = new mongoose.Schema({
         type: String,
         // required: true, // Ce champ est obligatoire
         // unique: true,  // Il doit être unique pour éviter les conflits
-        index: true,  // Accélère les recherches basées sur le room socket id
+        // index: true,  // Accélère les recherches basées sur le room socket id
     },
 
     admin: {

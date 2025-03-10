@@ -62,7 +62,9 @@ const getAllRooms = async (req, res, next) => {
  */
 const createRoom = async (req, res, next) => {
     try {
-        const room = await roomService.create(req.body);
+        const user = req.user;
+        console.log('USERRRR =>', user);
+        const room = await roomService.create({ ...req.body, user });
 
         res.status(201).json({ success: true, room });
     } catch (error) {
