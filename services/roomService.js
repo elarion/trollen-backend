@@ -1,5 +1,6 @@
 const Room = require('../models/rooms');
 const { createTagsFromRoom } = require('../services/tagService');
+const uid2 = require('uid2');
 
 const getAll = async () => {
     try {
@@ -65,11 +66,11 @@ const create = async (data) => {
         const newTags = await createTagsFromRoom(tags);
 
         const newRoom = new Room({
-            room_socket_id,
+            room_socket_id: uid2(20),
             name,
-            admin: user,
+            admin: user._id,
             participants: [{
-                user: user,
+                user: user._id,
                 role: 'admin',
             }],
             tags: newTags,
@@ -158,7 +159,7 @@ const joinByName = async ({ name, user, password = '' }) => {
                     }
                 },
                 { new: true } // Retourne la salle mise à jour
-            );
+            ).populate('participants.user');
         }
 
         return isExist;

@@ -1,13 +1,19 @@
 const MessageRoom = require("../models/messages_rooms");
 const roomService = require('../services/roomService');
 const messageRoomService = require('../services/messageRoomService');
+const { coupedecale } = require("../utils/spells");
 
 module.exports = (io, socket) => {
     console.log(`Socket ${socket.id} connecté à ChatSockets`);
 
     // Envoyer un message dans une room
-    socket.on("sendMessage", async ({ roomId, content, username }, callback) => {
+    socket.on("sendMessage", async ({ roomId, content, username, spelled }, callback) => {
         if (!roomId || !content || !username) return;
+
+
+        if (spelled) {
+            content = coupedecale(content);
+        }
 
         console.log("id user in socket =>", socket.user._id);
 

@@ -96,7 +96,7 @@ const logout = async (req, res, next) => {
     try {
         const { refreshToken: refresh_token } = req.body;
         if (!refresh_token) {
-            return res.status(400).json({ message: "Aucun token fourni" });
+            throw new CustomError("No token provided", 400);
         }
 
         // Suppression du token en base de données
@@ -104,10 +104,9 @@ const logout = async (req, res, next) => {
         // mais on pourrait aussi faire 
         await User.updateOne({ refresh_token }, { $unset: { refresh_token: 1 } });
 
-        return res.status(200).json({ message: "Déconnexion réussie" });
+        return res.status(200).json({ success: true, message: "Déconnexion réussie" });
     } catch (error) {
-        console.error("Erreur lors de la déconnexion :", error);
-        return res.status(500).json({ message: "Erreur interne du serveur" });
+        next(error);
     }
 
 }
