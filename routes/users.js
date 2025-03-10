@@ -17,7 +17,7 @@ router.post("/signup", userValidationRules(true), validateRequest, signup);
 router.post("/signin", signInValidationRules(), validateRequest, signin);
 router.post("/signup-guest", guestValidationRules(), validateRequest, signupGuest);
 router.post('/logout', authenticateToken, logout);
-router.post('/friends', /* authenticateToken, */ addFriend)
+router.post('/friends', authenticateToken, addFriend)
 
 router.use(errorHandler);
 // reminder, router.use(mymiddleware) is the same as app.use(middleware) 
