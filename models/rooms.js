@@ -13,9 +13,9 @@ const roomSchema = new mongoose.Schema({
     // Identifiant unique pour la gestion des WebSockets
     room_socket_id: {
         type: String,
-        required: true, // Ce champ est obligatoire
-        unique: true,  // Il doit être unique pour éviter les conflits
-        index: true,  // Accélère les recherches basées sur le room socket id
+        // required: true, // Ce champ est obligatoire
+        // unique: true,  // Il doit être unique pour éviter les conflits
+        // index: true,  // Accélère les recherches basées sur le room socket id
     },
 
     admin: {

@@ -1,12 +1,4 @@
-const {
-    getAll,
-    getById,
-    getByLimit,
-    create,
-    join,
-    remove
-} = require("../services/roomService");
-
+const roomService = require("../services/roomService");
 
 /**
  * Get a room by id
@@ -16,7 +8,7 @@ const {
  */
 const getRoomById = async (req, res, next) => {
     try {
-        const room = await getById(req.params.id);
+        const room = await roomService.getById(req.params.id);
 
         res.status(200).json({ success: true, room });
     } catch (error) {
@@ -24,11 +16,21 @@ const getRoomById = async (req, res, next) => {
     }
 };
 
+const getRoomByName = async (req, res, next) => {
+    try {
+        const room = await roomService.getByName(req.params.name);
+
+        res.status(200).json({ success: true, room });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getRoomsByLimit = async (req, res, next) => {
     try {
         if (!req.query.page || !req.query.limit) throw new CustomError('Please provide ?page=<nextpagenumber>&limit=25 in query params of your fetch', 400);
 
-        const rooms = await getByLimit(req.query);
+        const rooms = await roomService.getByLimit(req.query);
 
         res.status(200).json({ success: true, rooms });
     } catch (error) {
@@ -44,7 +46,7 @@ const getRoomsByLimit = async (req, res, next) => {
  */
 const getAllRooms = async (req, res, next) => {
     try {
-        const rooms = await getAll();
+        const rooms = await roomService.getAll();
 
         res.status(200).json({ success: true, rooms });
     } catch (error) {
@@ -60,7 +62,9 @@ const getAllRooms = async (req, res, next) => {
  */
 const createRoom = async (req, res, next) => {
     try {
-        const room = await create(req.body);
+        const user = req.user;
+        console.log('USERRRR =>', user);
+        const room = await roomService.create({ ...req.body, user });
 
         res.status(201).json({ success: true, room });
     } catch (error) {
@@ -74,9 +78,19 @@ const createRoom = async (req, res, next) => {
  * @param {Object} res - The response object
  * @param {Function} next - The next middleware function
  */
-const joinRoom = async (req, res, next) => {
+const joinRoomById = async (req, res, next) => {
     try {
-        const room = await join({ _id: req.params.id, user: req.body.user, password: req.body.password });
+        const room = await roomService.joinById({ _id: req.params.id, user: req.body.user, password: req.body.password });
+
+        return res.status(200).json({ success: true, room });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const joinRoomByName = async (req, res, next) => {
+    try {
+        const room = await roomService.joinByName({ name: req.params.name, user: req.user, password: req.body.password });
 
         return res.status(200).json({ success: true, room });
     } catch (error) {
@@ -92,7 +106,7 @@ const joinRoom = async (req, res, next) => {
  */
 const deleteRoom = async (req, res, next) => {
     try {
-        const room = await remove(req.params.id);
+        const room = await roomService.remove(req.params.id);
 
         res.status(200).json({ success: true, room });
     } catch (error) {
@@ -105,8 +119,10 @@ module.exports = {
     getRoomById,
     getRoomsByLimit,
     createRoom,
-    joinRoom,
-    deleteRoom
+    joinRoomById,
+    joinRoomByName,
+    deleteRoom,
+    getRoomByName
 };
 
 
