@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const uid2 = require("uid2");
 const { createCharacterFromSignup } = require("./charactersController");
 const { generateAccessToken, generateRefreshToken } = require("../utils/token");
+const { modifyProfileService} = require("../services/userService")
 
 
 const preSignup = async (req, res, next) => {
@@ -111,10 +112,30 @@ const logout = async (req, res, next) => {
 
 }
 
+
+
+const modifyProfile = async (req, res, next) => {
+
+    const {username} = req.body;
+    
+    try {
+        console.log('controller :', username)
+        const newUsername = await modifyProfileService(username);
+        console.log('New username (back controller after services) :', newUsername)
+
+        return res.status(200).json({ success: true, newUsername});
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+
 module.exports = {
     preSignup,
     signup,
     signin,
     signupGuest,
     logout,
+    modifyProfile,
 };
