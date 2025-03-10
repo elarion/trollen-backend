@@ -6,8 +6,8 @@ const reportUser = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { reason, description } = req.body;
-        // const reporter = req.user._id;
-        const reporter = "67cd896185a2526a593b5d7e";
+        const reporter = req.user._id;
+        
         const reported = id;
 
         if (!mongoose.Types.ObjectId.isValid(reported)) {
