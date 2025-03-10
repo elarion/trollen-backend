@@ -4,7 +4,6 @@ const addFriend = async (req, res, next) => {
     try {
         const user_1 = req.user._id;
         const user_2 = req.body.targetUserId;
-        // const { username } = req.body;
         
         const userFriend = await userFriendService.add({user_1, user_2})
 
