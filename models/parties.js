@@ -20,6 +20,12 @@ const partySchema = new mongoose.Schema({
         required: true
     },
 
+    join_id:{
+        type: String,
+        unique: true,
+        required: true 
+    },
+
     party_socket_id: {
         type: String,
         required: true,
