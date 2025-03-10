@@ -13,21 +13,21 @@ const levelSchema = new mongoose.Schema({
         default: 1
     },
 
-    effect :{
+    effect: {
         type: String,
         required: true,
     },
 
-    image :{
+    image: {
         type: String,
         required: true,
     },
-    
+
     using_count: {      //ajout
         type: Number,
         default: 0
-    }, 
-    
+    },
+
     cooldown: {
         type: Number,
         //required: true,
@@ -50,14 +50,14 @@ const levelSchema = new mongoose.Schema({
         required: true,
         default: 0,
     },
-    
+
 })
 
 const spellSchema = new mongoose.Schema({
-    
+
     _id: {
         type: mongoose.Schema.Types.ObjectId,
-        auto : true,
+        auto: true,
     },
 
     name: {
@@ -77,15 +77,15 @@ const spellSchema = new mongoose.Schema({
     },
 
     category: {
-        type: String, 
-        enum: ['active','passive'],
-        required: true,
+        type: String,
+        enum: ['active', 'passive'],
+        default: 'active',
     },
 
     races: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'races',
-        //required: true,
+        default: [],
     }],
 
     levels: [levelSchema],

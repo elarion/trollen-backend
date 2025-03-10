@@ -1,5 +1,6 @@
 const Room = require('../models/rooms');
 const { createTagsFromRoom } = require('../services/tagService');
+const uid2 = require('uid2');
 
 const getAll = async () => {
     try {
@@ -65,11 +66,11 @@ const create = async (data) => {
         const newTags = await createTagsFromRoom(tags);
 
         const newRoom = new Room({
-            room_socket_id,
+            room_socket_id: uid2(20),
             name,
-            admin: user,
+            admin: user._id,
             participants: [{
-                user: user,
+                user: user._id,
                 role: 'admin',
             }],
             tags: newTags,
@@ -93,7 +94,7 @@ const create = async (data) => {
     }
 }
 
-const join = async ({ _id, user, password = '' }) => {
+const joinById = async ({ _id, user, password = '' }) => {
     try {
         // Check if the room exists
         const isExist = await Room.findById(_id).select('_id settings participants');
@@ -106,8 +107,9 @@ const join = async ({ _id, user, password = '' }) => {
         // Check if the room is full
         if (isExist.settings.max > 0 && isExist.settings.max === isExist.participants.length)
             throw new CustomError('Room is full', 400);
+
         // Check if the user is already in the room
-        const isAlreadyIn = isExist.participants.some(participant => participant.user.toString() === user);
+        const isAlreadyIn = isExist.participants.some(participant => participant.user?.toString() === user);
         if (isAlreadyIn) throw new CustomError('User already in room', 400);
 
         const room = await Room.updateOne({ _id }, {
@@ -121,6 +123,46 @@ const join = async ({ _id, user, password = '' }) => {
         }, { new: true }); // mémo: new true pour retourner le document après update
 
         return room;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const joinByName = async ({ name, user, password = '' }) => {
+    try {
+        // Check if the room exists
+        let isExist = await Room.findOne({ name }).select('_id settings participants');
+        if (!isExist) throw new CustomError('Room not found', 404);
+
+        // Check if the room is password protected
+        if (isExist.settings.password && !(await isExist.comparePassword(password)))
+            throw new CustomError('Password is incorrect', 423);
+
+        // Check if the room is full
+        if (isExist.settings.max > 0 && isExist.settings.max === isExist.participants.length)
+            throw new CustomError('Room is full', 400);
+
+        // Check if the user is already in the room
+        const isAlreadyIn = isExist.participants.some(participant => participant.user?.toString() === user._id.toString());
+        // if (isAlreadyIn) throw new CustomError('User already in room', 400);
+        console.log('isAlreadyIn =>', isAlreadyIn);
+
+        if (!isAlreadyIn) {
+            isExist = await Room.findOneAndUpdate(
+                { _id: isExist._id },
+                {
+                    $push: {
+                        participants: {
+                            user: user._id,
+                            role: 'troll'
+                        }
+                    }
+                },
+                { new: true } // Retourne la salle mise à jour
+            ).populate('participants.user');
+        }
+
+        return isExist;
     } catch (error) {
         throw error;
     }
@@ -142,6 +184,7 @@ module.exports = {
     getById,
     getByLimit,
     create,
-    join,
+    joinById,
+    joinByName,
     remove
 };

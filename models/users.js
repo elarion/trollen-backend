@@ -12,21 +12,27 @@ const userSchema = new mongoose.Schema({
     // Champ indiquant si l'utilisateur a accepté les CGU
     has_consent: {
         type: Boolean,
-        required: true, // L'utilisateur doit obligatoirement donner son consentement
         default: true, // Par défaut, le consentement est refusé
     },
 
     // Identifiant unique de la connexion WebSocket
     socket_id: {
         type: String,
-        unique: true, // Un utilisateur ne peut avoir qu'un seul socket_id actif
+        default: null,
+        unique: true,
+        sparse: true, // Permet d'accepter null sans briser l'unicité
+
+        // unique: true, // Un utilisateur ne peut avoir qu'un seul socket_id actif
     },
 
     // Token de rafraîchissement utilisé pour la gestion des sessions
     refresh_token: {
         type: String,
-        required: true, // Obligatoire pour la gestion de l'authentification
-        unique: true, // Un utilisateur ne peut pas avoir deux tokens identiques
+        default: null,
+        // unique: true,
+        // sparse: true, // Permet d'accepter null sans briser l'unicité
+        // required: true, // Obligatoire pour la gestion de l'authentification
+        // unique: true, // Un utilisateur ne peut pas avoir deux tokens identiques
     },
 
     // Nom d'utilisateur
@@ -71,7 +77,6 @@ const userSchema = new mongoose.Schema({
     // Indique si l'utilisateur est un "guest" (non-inscrit)
     is_guest: {
         type: Boolean,
-        required: true,
         default: false
     },
 
@@ -79,7 +84,6 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: ['user', 'admin', 'superuser', 'guest'], // Liste des rôles possibles
-        required: true,
         default: 'user', // Par défaut, tout utilisateur est un simple "user"
     },
 
@@ -87,7 +91,6 @@ const userSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['active', 'pending', 'suspended', 'banned'], // État du compte
-        required: true,
         default: 'pending', // L'utilisateur doit valider son inscription
     },
 
