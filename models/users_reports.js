@@ -30,7 +30,7 @@ const userReportSchema = mongoose.Schema({
 
     description: {
         type: String,
-        required: false, // Facultatif : une description n'est pas obligatoire
+        default: null, // Facultatif : une description n'est pas obligatoire
     },
 
     // Statut du signalement (par défaut en attente de traitement)

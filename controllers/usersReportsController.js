@@ -7,14 +7,16 @@ const reportUser = async (req, res, next) => {
         const { id } = req.params;
         const { reason, description } = req.body;
         const reporter = req.user._id;
+
+        console.log(req.body)
         
         const reported = id;
 
-        if (!mongoose.Types.ObjectId.isValid(reported)) {
-            return res.status(400).json({ success: false, message: "Invalid user ID" });
-        }
+        // if (!mongoose.Types.ObjectId.isValid(reported)) {
+        //     return res.status(400).json({ success: false, message: "Invalid user ID" });
+        // }
 
-        if (!reason || !description) {
+        if (!reason) {
             return res.status(400).json({ success: false, message: "Reason and description are required" });
         }
 
