@@ -24,8 +24,13 @@ const userReportSchema = mongoose.Schema({
     // Raison du signalement
     reason: {
         type: String,
-        enum: ['harcelement', 'insulte', 'autre'], // Raisons possibles
+        enum: ['spam', 'toxic behavior', 'hate speech', 'scamming','griefing','doxxing','other'], // Raisons possibles
         required: true, // Obligatoire : un signalement doit avoir une raison
+    },
+
+    description: {
+        type: String,
+        default: null, // Facultatif : une description n'est pas obligatoire
     },
 
     // Statut du signalement (par défaut en attente de traitement)
