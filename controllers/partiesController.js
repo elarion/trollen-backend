@@ -142,7 +142,7 @@ const joinParty = async (req, res, next) => {
             'participants.user': { $ne: user } 
         })
         .populate('game', 'min max')
-        .populate('participants.user', 'username'); 
+            .populate('participants.user', 'username'); 
     
         let minMissingPlayers = null;
         let bestParty = null;
