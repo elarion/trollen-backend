@@ -19,10 +19,6 @@ const userSchema = new mongoose.Schema({
     socket_id: {
         type: String,
         default: null,
-        unique: true,
-        sparse: true, // Permet d'accepter null sans briser l'unicité
-
-        // unique: true, // Un utilisateur ne peut avoir qu'un seul socket_id actif
     },
 
     // Token de rafraîchissement utilisé pour la gestion des sessions
