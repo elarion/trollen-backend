@@ -25,7 +25,7 @@ const getById = async (id) => {
             .populate([
                 { path: 'tags', select: '_id name slug' },
                 { path: 'admin', select: '_id username' },
-                { path: 'participants.user', select: '_id username' }
+                { path: 'participants.user', select: '_id username socket_id' }
             ]);
 
         if (!room) throw new CustomError('Room not foundsss', 404);
