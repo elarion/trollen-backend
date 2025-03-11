@@ -48,7 +48,9 @@ const getByLimit = async ({ page = Number(page) || 1, limit = Number(limit) || 2
                 { path: 'tags', select: '_id name slug' },
                 { path: 'admin', select: '_id username' },
                 { path: 'participants.user', select: '_id username email' }
-            ]);
+            ])
+            .sort({ createdAt: -1 })
+            .lean();
 
         return rooms
     } catch (error) {
@@ -122,7 +124,9 @@ const joinById = async ({ _id, user, password = '' }) => {
             }
         }, { new: true }); // mémo: new true pour retourner le document après update
 
-        return room;
+        const roomUpdated = await getById(room._id);
+
+        return roomUpdated;
     } catch (error) {
         throw error;
     }

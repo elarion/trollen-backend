@@ -68,6 +68,22 @@ const userSchema = new mongoose.Schema({
         type: Date, // Stocke la date limite d'utilisation du token
     },
 
+    rooms: {
+        type: [{
+            room: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'rooms',
+                required: true, // Assure qu'une room est toujours définie
+            },
+            favorite: {
+                type: Boolean,
+                default: false, // Permet de marquer une room comme favorite
+            }
+        }],
+        default: [] // Définit un tableau vide par défaut
+    },
+
+
     // URL de l'avatar de l'utilisateur (optionnel)
     avatar: {
         type: String,
