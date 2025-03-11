@@ -38,9 +38,15 @@ module.exports = (server) => {
 
         // Gestion de la déconnexion
         socket.on("disconnect", async () => {
+            console.log(`❌ Déconnexion : ${socket.id}`);
+
             await User.updateOne({ socket_id: socket.id }, { $set: { socket_id: null } });
 
-            console.log("Client déconnecté", socket.id);
+            // Vérifier s'il reste d'autres sockets actifs pour le user
+            const stillConnectedUsers = await User.find({ socket_id: { $ne: null } }).select("socket_id");
+            if (stillConnectedUsers.length === 0) {
+                io.emit("userDisconnected", { socketId: socket.id });
+            }
         });
     });
 
