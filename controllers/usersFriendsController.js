@@ -21,7 +21,7 @@ const getSendedFriendRequests = async (req, res, next) => {
         if (sended && sended.length > 0) {
             res.status(200).json({ success: true, message: "demande envoyé", sended });
         } else {
-            res.status(404).json({ success: false, message: "Aucune demande d'ami trouvé" });
+            res.status(204).json({ success: false, message: "Aucune demande d'ami trouvé" });
         }
     } catch (error) {
         next(error);
@@ -36,7 +36,7 @@ const getReceivedFriendRequests = async (req, res, next) => {
         if (received && received.length > 0) {
             res.status(200).json({ success: true, message: "Received friend requests ok", received });
         } else {
-            res.status(404).json({ success: false, message: "Aucune demande d'ami reçue" });
+            res.status(204).json({ success: false, message: "Aucune demande d'ami reçue" });
         }
     } catch (error) {
         next(error);
