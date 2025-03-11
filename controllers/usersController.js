@@ -117,13 +117,14 @@ const logout = async (req, res, next) => {
 const modifyProfile = async (req, res, next) => {
 
     const {username} = req.body;
+    const user = req.user;
     
     try {
         console.log('controller :', username)
-        const newUsername = await modifyProfileService(username);
-        console.log('New username (back controller after services) :', newUsername)
+        const userUpdated = await modifyProfileService(username, user);
+        console.log('New username (back controller after services) :', userUpdated.username)
 
-        return res.status(200).json({ success: true, newUsername});
+        return res.status(200).json({ success: true, user : userUpdated});
     } catch (error) {
         next(error);
     }
