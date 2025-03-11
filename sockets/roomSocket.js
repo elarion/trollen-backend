@@ -1,22 +1,41 @@
 const roomService = require("../services/roomService");
+const User = require("../models/users");
+const Room = require("../models/rooms");
 
 module.exports = (io, socket) => {
     console.log(`Socket ${socket.id} connecté à RoomSockets`);
 
     // Rejoindre une room
-    socket.on("joinRoom", async ({ roomId, username }, callback) => {
+    socket.on("joinRoom", async ({ roomId }, callback) => {
         try {
-            if (!roomId || !username) throw new CustomError("Room ID and username are required", 400);
+            const user = await User.findById(socket.user._id);
+            if (!user) throw new CustomError("User not found", 404);
 
-            const roomKey = String(roomId);
-            socket.join(roomKey);
+            const room = await Room.findById(roomId).populate('participants.user');
+            if (!room) throw new CustomError("Room not found", 404);
 
-            console.log('backend =>', `${username} a rejoint la room ${roomId}`);
+            // Ajouter le user à la room s'il n'est pas encore participant
+            if (!room.participants.some(participant => participant.user?._id.equals(user._id))) {
+                room.admin === user._id ? room.admin = user._id : null;
+                room.participants.push({ user: user._id, role: 'troll' });
+                await room.save();
+            }
 
-            // Envoyer l'état actuel de la room
-            const room = await roomService.getById(roomId);
+            // Ajouter la room au sous-document du user s'il n'y est pas encore
+            if (!user.rooms.some((r) => r.room.toString() === roomId)) {
+                user.rooms.push({ room: roomId });
+                await user.save();
+            }
 
-            io.to(roomKey).emit("roomInfo", { room });
+            socket.join(roomId.toString()); // Il rejoint SEULEMENT maintenant
+
+            console.log(`🏠 ${user.username} a rejoint la room ${roomId}`);
+
+            // Informer les autres utilisateurs de la room
+            io.to(roomId.toString()).emit("userJoined", { username: user.username, roomId });
+
+            const roomUpdated = await roomService.getById(roomId);
+            io.to(roomId.toString()).emit("roomInfo", { room: roomUpdated });
 
             callback({ success: true });
         } catch (error) {
@@ -27,6 +46,30 @@ module.exports = (io, socket) => {
             });
         }
     });
+
+    // socket.on("joinRoom", async ({ roomId, username }, callback) => {
+    //     try {
+    //         if (!roomId || !username) throw new CustomError("Room ID and username are required", 400);
+
+    //         const roomKey = String(roomId);
+    //         socket.join(roomKey);
+
+    //         console.log('backend =>', `${username} a rejoint la room ${roomId}`);
+
+    //         // Envoyer l'état actuel de la room
+    //         const room = await roomService.getById(roomId);
+
+    //         io.to(roomKey).emit("roomInfo", { room });
+
+    //         callback({ success: true });
+    //     } catch (error) {
+    //         callback({
+    //             success: false,
+    //             error: error.message || "Internal Server Error",
+    //             statusCode: error.statusCode || 500
+    //         });
+    //     }
+    // });
 
     socket.on('spelled', ({ targetId, roomId }, callback) => {
         try {
