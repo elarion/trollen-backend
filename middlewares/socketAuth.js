@@ -1,15 +1,24 @@
+const User = require("../models/users");
 const jwt = require("jsonwebtoken");
 
-const socketAuth = (socket, next) => {
+const socketAuth = async (socket, next) => {
     try {
-        const token = socket.handshake.auth.token; // Récupère le token envoyé
-        if (!token) throw new CustomError("No token provided", 400);
+        const token = socket.handshake.auth.token;
+        if (!token) throw new Error("No token provided");
 
-        // const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
         const decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
-        socket.user = decoded; // Stocke l'utilisateur dans `socket.user`
+        let user = await User.findById(decoded._id);
 
-        next(); // Passe au prochain middleware
+        if (!user) throw new CustomError("User not found", 404);
+
+        // Mettre à jour socketId
+        user.socket_id = socket.id;
+        await user.save();
+
+        // Associer l'utilisateur au socket
+        socket.user = user;
+
+        next();
     } catch (error) {
         next(error);
     }

@@ -1,11 +1,12 @@
 const express = require("express");
 const {
-    userValidationRules,
     signInValidationRules,
     guestValidationRules,
+    userValidationRules,
+    
 } = require("../validators/userValidator");
 const validateRequest = require("../middlewares/validationRequest");
-const { preSignup, signup, signin, signupGuest, logout } = require("../controllers/usersController");
+const { preSignup, signup, signin, signupGuest, logout, modifyProfile,} = require("../controllers/usersController");
 const { addFriend } = require("../controllers/usersFriendsController");
 const errorHandler = require("../middlewares/errorHandler");
 const authenticateToken = require("../middlewares/authenticateToken");
@@ -16,7 +17,8 @@ router.post("/pre-signup", userValidationRules(), validateRequest, preSignup);
 router.post("/signup", userValidationRules(true), validateRequest, signup);
 router.post("/signin", signInValidationRules(), validateRequest, signin);
 router.post("/signup-guest", guestValidationRules(), validateRequest, signupGuest);
-router.post('/logout', authenticateToken, logout);
+router.post('/logout', authenticateToken,  logout);
+router.put('/modify-profile', authenticateToken, modifyProfile)
 router.post('/friends', authenticateToken, addFriend)
 
 router.use(errorHandler);

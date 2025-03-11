@@ -17,4 +17,5 @@ router.delete("/:id", authenticateToken, roomsController.deleteRoom); // Delete 
 
 router.use(errorHandler);
 
+
 module.exports = router;
