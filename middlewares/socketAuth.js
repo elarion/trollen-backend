@@ -11,6 +11,17 @@ const socketAuth = async (socket, next) => {
 
         if (!user) throw new CustomError("User not found", 404);
 
+        if (user?.socket_id && user.socket_id !== socket.id) {
+            console.log(`Ancien socket détecté : ${user.socket_id}`);
+
+            // Forcer la déconnexion de l'ancien socket
+            const oldSocket = socket.server.sockets.sockets.get(user.socket_id);
+            if (oldSocket) {
+                oldSocket.disconnect(true);
+                console.log(`❌ Ancien socket ${user.socket_id} déconnecté`);
+            }
+        }
+
         // Mettre à jour socketId
         user.socket_id = socket.id;
         await user.save();
