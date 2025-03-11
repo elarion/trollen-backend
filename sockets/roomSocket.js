@@ -105,6 +105,7 @@ module.exports = (io, socket) => {
         }
     });
 
+
     // Quitter une room
     socket.on("leaveRoom", ({ roomId, username }, callback) => {
         try {
