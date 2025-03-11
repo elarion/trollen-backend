@@ -5,7 +5,6 @@ const Room = require("../models/rooms");
 module.exports = (io, socket) => {
     console.log(`Socket ${socket.id} connecté à RoomSockets`);
 
-    // Rejoindre une room
     socket.on("joinRoom", async ({ roomId }, callback) => {
         try {
             const user = await User.findById(socket.user._id);
@@ -14,9 +13,16 @@ module.exports = (io, socket) => {
             const room = await Room.findById(roomId).populate('participants.user');
             if (!room) throw new CustomError("Room not found", 404);
 
-            // Ajouter le user à la room s'il n'est pas encore participant
+            // Vérifier si le user est déjà dans la room côté WebSocket
+            if (socket.rooms.has(roomId.toString())) {
+                console.log(`${user.username} est déjà dans la room ${roomId}, id socket => ${socket.id}`);
+                const roomUpdated = await roomService.getById(roomId);
+                io.to(roomId.toString()).emit("roomInfo", { room: roomUpdated });
+                return callback({ success: true, message: "Déjà dans la room" });
+            }
+
+            // Ajouter le user à la room en base de données s'il n'est pas encore dedans
             if (!room.participants.some(participant => participant.user?._id.equals(user._id))) {
-                room.admin === user._id ? room.admin = user._id : null;
                 room.participants.push({ user: user._id, role: 'troll' });
                 await room.save();
             }
@@ -27,7 +33,8 @@ module.exports = (io, socket) => {
                 await user.save();
             }
 
-            socket.join(roomId.toString()); // Il rejoint SEULEMENT maintenant
+            // 🔥 Maintenant, on peut rejoindre la room
+            socket.join(roomId.toString());
 
             console.log(`🏠 ${user.username} a rejoint la room ${roomId}`);
 
@@ -98,14 +105,15 @@ module.exports = (io, socket) => {
         }
     });
 
+
     // Quitter une room
     socket.on("leaveRoom", ({ roomId, username }, callback) => {
         try {
             socket.leave(roomId);
             console.log('backend =>', `${username} a quitté la room ${roomId}`);
-            return callback({ success: true });
+            if (callback) return callback({ success: true });
         } catch (error) {
-            return callback({
+            if (callback) return callback({
                 success: false,
                 message: error.message || "Une erreur est survenue",
                 statusCode: 500,
