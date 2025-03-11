@@ -2,10 +2,11 @@ const express = require("express");
 const {
     signInValidationRules,
     guestValidationRules,
-    userValidationRules
+    userValidationRules,
+    
 } = require("../validators/userValidator");
 const validateRequest = require("../middlewares/validationRequest");
-const { preSignup, signup, signin, signupGuest, logout } = require("../controllers/usersController");
+const { preSignup, signup, signin, signupGuest, logout, modifyProfile,} = require("../controllers/usersController");
 const { addFriend } = require("../controllers/usersFriendsController");
 const errorHandler = require("../middlewares/errorHandler");
 const authenticateToken = require("../middlewares/authenticateToken");
