@@ -21,8 +21,8 @@ const getByUserId = async (user) => {
         const character = await Character.findOne({ user })
             .populate([
                 { path: 'user', select: '_id username' },
-                { path: 'race', select: '_id name' },
-                { path: 'spells', select: '_id name' },
+                { path: 'race', select: '_id name tagline description avatar spells' },
+                { path: 'spells', select: '_id name ' },
             ]);
 
         if (!character) throw { statusCode: 404, message: 'Character not found' };
