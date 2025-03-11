@@ -110,9 +110,9 @@ module.exports = (io, socket) => {
         try {
             socket.leave(roomId);
             console.log('backend =>', `${username} a quitté la room ${roomId}`);
-            return callback({ success: true });
+            if (callback) return callback({ success: true });
         } catch (error) {
-            return callback({
+            if (callback) return callback({
                 success: false,
                 message: error.message || "Une erreur est survenue",
                 statusCode: 500,
