@@ -5,7 +5,8 @@ const {
     userValidationRules
 } = require("../validators/userValidator");
 const validateRequest = require("../middlewares/validationRequest");
-const { preSignup, signup, signin, signupGuest, logout, modifyProfile } = require("../controllers/usersController");
+const { preSignup, signup, signin, signupGuest, logout } = require("../controllers/usersController");
+const { addFriend } = require("../controllers/usersFriendsController");
 const errorHandler = require("../middlewares/errorHandler");
 const authenticateToken = require("../middlewares/authenticateToken");
 
@@ -17,6 +18,7 @@ router.post("/signin", signInValidationRules(), validateRequest, signin);
 router.post("/signup-guest", guestValidationRules(), validateRequest, signupGuest);
 router.post('/logout', authenticateToken,  logout);
 router.put('/modify-profile', authenticateToken, modifyProfile)
+router.post('/friends', authenticateToken, addFriend)
 
 router.use(errorHandler);
 // reminder, router.use(mymiddleware) is the same as app.use(middleware) 
