@@ -26,6 +26,7 @@ const partiesRouter = require('./routes/parties');
 const gamesRouter = require('./routes/games');
 const messagesRoomsRouter = require('./routes/messages_rooms');
 const partiesSessionRouter = require('./routes/parties_session');
+const usersFriendsRouter = require('./routes/users_friends')
 /** END OF Routes */
 
 var app = express();
@@ -56,5 +57,6 @@ app.use('/rooms', roomsRouter);
 app.use('/parties', partiesRouter);
 app.use('/games', gamesRouter);
 app.use('/messages-rooms', messagesRoomsRouter);
+app.use('/users_friends', usersFriendsRouter);
 // app.use('/parties-session', partiesSessionRouter);
 module.exports = app;
