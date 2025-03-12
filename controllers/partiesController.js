@@ -33,7 +33,7 @@ const partyById = async (req, res, next) => {
         const { id } = req.params;
         const party = await Party.findById(id)
             .populate([
-                { path: 'game', select: 'name' },
+                { path: 'game' },
                 { path: "participants.user", select: "username" },
                 { path: "admin", select: "username" }
             ]);
