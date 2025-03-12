@@ -61,7 +61,8 @@ module.exports = (io, socket) => {
                     spells: spellsSuccess
                 });
 
-                // Envoyer le message à tous les membres de la room
+                // Envoyer le message à tous les membres de la room sauf moi
+                // socket.broadcast.to(roomId).emit("roomMessage", { message });
                 io.to(roomId).emit("roomMessage", { message });
 
                 callback({ success: true, message: "Message bien envoyé (depuis le backend)" });
