@@ -33,7 +33,7 @@ module.exports = (io, socket) => {
                 await user.save();
             }
 
-            // 🔥 Maintenant, on peut rejoindre la room
+            // Maintenant, on peut rejoindre la room
             socket.join(roomId.toString());
 
             console.log(`🏠 ${user.username} a rejoint la room ${roomId}`);
@@ -48,35 +48,12 @@ module.exports = (io, socket) => {
         } catch (error) {
             callback({
                 success: false,
-                error: error.message || "Internal Server Error",
+                message: error.message || "Internal Server Error",
+                error: error,
                 statusCode: error.statusCode || 500
             });
         }
     });
-
-    // socket.on("joinRoom", async ({ roomId, username }, callback) => {
-    //     try {
-    //         if (!roomId || !username) throw new CustomError("Room ID and username are required", 400);
-
-    //         const roomKey = String(roomId);
-    //         socket.join(roomKey);
-
-    //         console.log('backend =>', `${username} a rejoint la room ${roomId}`);
-
-    //         // Envoyer l'état actuel de la room
-    //         const room = await roomService.getById(roomId);
-
-    //         io.to(roomKey).emit("roomInfo", { room });
-
-    //         callback({ success: true });
-    //     } catch (error) {
-    //         callback({
-    //             success: false,
-    //             error: error.message || "Internal Server Error",
-    //             statusCode: error.statusCode || 500
-    //         });
-    //     }
-    // });
 
     socket.on('spelled', ({ targetId, roomId }, callback) => {
         try {
@@ -99,7 +76,8 @@ module.exports = (io, socket) => {
         } catch (error) {
             callback({
                 success: false,
-                error: error.message || "Internal Server Error",
+                message: error.message || "Internal Server Error",
+                error: error,
                 statusCode: error.statusCode || 500
             });
         }

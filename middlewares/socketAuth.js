@@ -6,10 +6,13 @@ const socketAuth = async (socket, next) => {
         const token = socket.handshake.auth.token;
         if (!token) throw new Error("No token provided");
 
+        console.log('in scoket auth token =>', token);
         const decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
         let user = await User.findById(decoded._id);
 
         if (!user) throw new CustomError("User not found", 404);
+
+        console.log(`Bienvenue dans le socket mon ami => ${user.username}`);
 
         if (user?.socket_id && user.socket_id !== socket.id) {
             console.log(`Ancien socket détecté : ${user.socket_id}`);

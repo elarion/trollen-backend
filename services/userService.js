@@ -3,10 +3,7 @@ const User = require('../models/users')
 
 const isUserInRoom = async (roomId, userId) => {
 	try {
-		console.log('isUserinRoom =>', roomId, userId)
-		// Find a room by its users in the subdoc participants of the Room model
-		const room = await Room.findOne({ _id: roomId, participants: { $elemMatch: { user: userId } } }).select('_id');
-		return room ? true : false;
+		return await User.exists({ _id: userId, "rooms.room": roomId });
 	} catch (error) {
 		throw error
 	}

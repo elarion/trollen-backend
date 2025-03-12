@@ -33,11 +33,19 @@ const signup = async (req, res, next) => {
         user.selected_character = character._id;
         await user.save();
 
+        // user = await user.populate([
+        //     { path: 'selected_character', select: '_id name race gender avatar spells' },
+        //     { path: 'selected_character.race', select: '_id name avatar' },
+        //     { path: 'selected_character.spells.spell', select: '_id name category description' },
+        // ]);
+
         user = await user.populate([
-            { path: 'selected_character', select: '_id name race gender avatar spells' },
-            { path: 'selected_character.race', select: '_id name avatar' },
-            { path: 'selected_character.spells.spell', select: '_id name description' },
+            { path: 'selected_character', select: '_id name race gender avatar spells' }, // Peuple selected_character
+            { path: 'selected_character.race', select: '_id name avatar' } // Peuple la race
         ]);
+
+        // Maintenant, on doit peupler `selected_character.spells.spell` séparément
+        await user.populate('selected_character.spells.spell', '_id name category description');
 
         // Generate a JWT token for the user
         // The JWT is composed in three parts :
@@ -75,11 +83,20 @@ const signin = async (req, res, next) => {
         user.refresh_token = refreshToken;
         await user.save();
 
+        // user = await user.populate([
+        //     { path: 'selected_character', select: '_id name race gender avatar spells' },
+        //     { path: 'selected_character.race', select: '_id name avatar' },
+        //     { path: 'selected_character.spells.spell', select: '_id name category description' },
+        // ]);
+
         user = await user.populate([
-            { path: 'selected_character', select: '_id name race gender avatar spells' },
-            { path: 'selected_character.race', select: '_id name avatar' },
-            { path: 'selected_character.spells.spell', select: '_id name description' },
+            { path: 'selected_character', select: '_id name race gender avatar spells' }, // Peuple selected_character
+            { path: 'selected_character.race', select: '_id name avatar' } // Peuple la race
         ]);
+
+        // Maintenant, on doit peupler `selected_character.spells.spell` séparément
+        await user.populate('selected_character.spells.spell', '_id name category description');
+
 
         res.status(200).json({ success: true, message: "Connexion réussie", accessToken, refreshToken, user });
     } catch (error) {
