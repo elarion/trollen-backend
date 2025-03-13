@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true, // Nécessaire pour l'identification et la récupération du compte
         unique: true, // Une adresse e-mail ne peut être utilisée qu'une seule fois
-        match: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/, // Vérification du format e-mail
+        // match: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/, // Vérification du format e-mail
     },
 
     // Mot de passe (hashé)
