@@ -14,7 +14,9 @@ router.post("/create", authenticateToken, roomValidationRules(), validateRequest
 router.put("/join-by-id/:id", authenticateToken, roomsController.joinRoomById); // Join a room
 router.put("/join-by-name/:name", authenticateToken, roomsController.joinRoomByName); // Join a room
 router.delete("/:id", authenticateToken, roomsController.deleteRoom); // Delete room
+router.get("/join-by-random", authenticateToken, roomsController.joinRoomByRandom); // Join a random room
 
 router.use(errorHandler);
+
 
 module.exports = router;

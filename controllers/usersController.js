@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 const uid2 = require("uid2");
 const { createCharacterFromSignup } = require("./charactersController");
 const { generateAccessToken, generateRefreshToken } = require("../utils/token");
-
+const { modifyProfileService } = require("../services/userService")
 
 const preSignup = async (req, res, next) => {
     try {
-        res.status(201).json({ success: true, user: req.body });
+        res.status(200).json({ success: true, user: req.body });
     } catch (error) {
         next(error);
     }
@@ -20,7 +20,7 @@ const signup = async (req, res, next) => {
     try {
         const { username, email, password, gender, race, avatar } = req.body;
 
-        const user = new User({
+        let user = new User({
             username,
             email,
             password,
@@ -29,6 +29,23 @@ const signup = async (req, res, next) => {
         await user.save();
 
         const character = await createCharacterFromSignup({ _id: user._id, gender, race, avatar });
+
+        user.selected_character = character._id;
+        await user.save();
+
+        // user = await user.populate([
+        //     { path: 'selected_character', select: '_id name race gender avatar spells' },
+        //     { path: 'selected_character.race', select: '_id name avatar' },
+        //     { path: 'selected_character.spells.spell', select: '_id name category description' },
+        // ]);
+
+        user = await user.populate([
+            { path: 'selected_character', select: '_id name race gender avatar spells' }, // Peuple selected_character
+            { path: 'selected_character.race', select: '_id name avatar' } // Peuple la race
+        ]);
+
+        // Maintenant, on doit peupler `selected_character.spells.spell` séparément
+        await user.populate('selected_character.spells.spell', '_id name category description');
 
         // Generate a JWT token for the user
         // The JWT is composed in three parts :
@@ -53,18 +70,33 @@ const signup = async (req, res, next) => {
 const signin = async (req, res, next) => {
     try {
         const { username, password, email } = req.body;
-        const user = await User.findOne({ $or: [{ username }, { email }] });
+        let user = await User.findOne({ $or: [{ username }, { email }] });
 
         if (!user) throw new CustomError("Username or email is invalid", 400);
 
         const check = await user.comparePassword(password);
-        if (!check) throw new CustomError("Password incorrect", 400);
+        if (!check) throw new CustomError("Username or email is invalid", 400);
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
         user.refresh_token = refreshToken;
         await user.save();
+
+        // user = await user.populate([
+        //     { path: 'selected_character', select: '_id name race gender avatar spells' },
+        //     { path: 'selected_character.race', select: '_id name avatar' },
+        //     { path: 'selected_character.spells.spell', select: '_id name category description' },
+        // ]);
+
+        user = await user.populate([
+            { path: 'selected_character', select: '_id name race gender avatar spells' }, // Peuple selected_character
+            { path: 'selected_character.race', select: '_id name avatar' } // Peuple la race
+        ]);
+
+        // Maintenant, on doit peupler `selected_character.spells.spell` séparément
+        await user.populate('selected_character.spells.spell', '_id name category description');
+
 
         res.status(200).json({ success: true, message: "Connexion réussie", accessToken, refreshToken, user });
     } catch (error) {
@@ -104,6 +136,10 @@ const logout = async (req, res, next) => {
         // mais on pourrait aussi faire 
         await User.updateOne({ refresh_token }, { $unset: { refresh_token: 1 } });
 
+        // if (req.io) {
+        //     req.io.emit("userLogout", { username: req.user.username });
+        // }
+
         return res.status(200).json({ success: true, message: "Déconnexion réussie" });
     } catch (error) {
         next(error);
@@ -111,10 +147,31 @@ const logout = async (req, res, next) => {
 
 }
 
+
+
+const modifyProfile = async (req, res, next) => {
+
+    const { username } = req.body;
+    const user = req.user;
+
+    try {
+        console.log('controller :', username)
+        const userUpdated = await modifyProfileService(username, user);
+        console.log('New username (back controller after services) :', userUpdated.username)
+
+        return res.status(200).json({ success: true, user: userUpdated });
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+
 module.exports = {
     preSignup,
     signup,
     signin,
     signupGuest,
     logout,
+    modifyProfile,
 };

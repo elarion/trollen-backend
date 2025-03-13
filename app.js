@@ -26,7 +26,11 @@ const partiesRouter = require('./routes/parties');
 const gamesRouter = require('./routes/games');
 const messagesRoomsRouter = require('./routes/messages_rooms');
 const partiesSessionRouter = require('./routes/parties_session');
+<<<<<<< HEAD
 const usersReportsRouter = require('./routes/users_reports');
+=======
+const usersFriendsRouter = require('./routes/users_friends')
+>>>>>>> 7b1f4b6bab3aea8e0edfb85a9a28ef7fce57549d
 /** END OF Routes */
 
 var app = express();
@@ -41,6 +45,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 /** END OF Middlewares */
 
+/** Injecter io dans les routes */
+app.use((req, res, next) => {
+    req.io = app.get("io"); // 🔥 Permet d’accéder à `io` dans les routes
+    next();
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/characters', charactersRouter);
@@ -51,6 +61,11 @@ app.use('/rooms', roomsRouter);
 app.use('/parties', partiesRouter);
 app.use('/games', gamesRouter);
 app.use('/messages-rooms', messagesRoomsRouter);
+<<<<<<< HEAD
 app.use('/parties-session', partiesSessionRouter);
 app.use('/users-reports', usersReportsRouter);
+=======
+app.use('/users_friends', usersFriendsRouter);
+// app.use('/parties-session', partiesSessionRouter);
+>>>>>>> 7b1f4b6bab3aea8e0edfb85a9a28ef7fce57549d
 module.exports = app;

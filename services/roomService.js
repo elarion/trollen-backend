@@ -25,7 +25,7 @@ const getById = async (id) => {
             .populate([
                 { path: 'tags', select: '_id name slug' },
                 { path: 'admin', select: '_id username' },
-                { path: 'participants.user', select: '_id username' }
+                { path: 'participants.user', select: '_id username socket_id' }
             ]);
 
         if (!room) throw new CustomError('Room not foundsss', 404);
@@ -48,7 +48,9 @@ const getByLimit = async ({ page = Number(page) || 1, limit = Number(limit) || 2
                 { path: 'tags', select: '_id name slug' },
                 { path: 'admin', select: '_id username' },
                 { path: 'participants.user', select: '_id username email' }
-            ]);
+            ])
+            .sort({ createdAt: -1 })
+            .lean();
 
         return rooms
     } catch (error) {
@@ -122,7 +124,9 @@ const joinById = async ({ _id, user, password = '' }) => {
             }
         }, { new: true }); // mémo: new true pour retourner le document après update
 
-        return room;
+        const roomUpdated = await getById(room._id);
+
+        return roomUpdated;
     } catch (error) {
         throw error;
     }
@@ -168,6 +172,39 @@ const joinByName = async ({ name, user, password = '' }) => {
     }
 }
 
+const joinByRandom = async (user) => {
+    try {
+        // Find a random room with no password or private settings false
+        // It must be a random room, not the first one finding one
+
+        const randomRoom = await Room.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { "settings.max": 0 },
+                        { $expr: { $gt: ["settings.max", { $size: "$participants" }] } }
+                    ],
+                    // check si password chaine de caractères vide
+                    // "settings.password": { $exists: false },
+                    "settings.is_private": false
+                }
+            },
+            { $sample: { size: 1 } }
+        ]);
+
+        if (!randomRoom) throw new CustomError('No room found', 404);
+
+        console.log('randomRoom =>', randomRoom);
+
+        return randomRoom[0];
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
+
 const remove = async (_id) => {
     try {
         const room = await Room.findOneAndDelete({ _id });
@@ -186,5 +223,6 @@ module.exports = {
     create,
     joinById,
     joinByName,
+    joinByRandom,
     remove
 };
