@@ -1,17 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const {allParties,partyById, joinPartyByJoinId,createParty,joinParty} = require("../controllers/partiesController");
+const partiesController = require("../controllers/partiesController");
 const errorHandler = require("../middlewares/errorHandler")
-const validateRequest = require("../middlewares/validationRequest")
+// const validateRequest = require("../middlewares/validationRequest")
+const authenticateToken = require("../middlewares/authenticateToken")
+
 router.use(errorHandler);
 
-
-router.get("/", validateRequest, allParties),
-router.get("/:id", validateRequest, partyById),
-router.post("/", validateRequest, createParty),
-router.put("/", validateRequest,joinPartyByJoinId);
-router.post("/join", validateRequest, joinParty), //matchmaking
-
-
+router.get("/", authenticateToken, partiesController.allParties);
+router.get("/:id", authenticateToken, partiesController.partyById);
+router.post("/create", authenticateToken, partiesController.createParty);
+router.put("/join-by-id", authenticateToken, partiesController.joinPartyByJoinId);
+router.put("/join-random", authenticateToken, partiesController.joinParty);
 
 module.exports = router;

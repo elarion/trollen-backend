@@ -19,10 +19,6 @@ const userSchema = new mongoose.Schema({
     socket_id: {
         type: String,
         default: null,
-        unique: true,
-        sparse: true, // Permet d'accepter null sans briser l'unicité
-
-        // unique: true, // Un utilisateur ne peut avoir qu'un seul socket_id actif
     },
 
     // Token de rafraîchissement utilisé pour la gestion des sessions
@@ -47,7 +43,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true, // Nécessaire pour l'identification et la récupération du compte
         unique: true, // Une adresse e-mail ne peut être utilisée qu'une seule fois
-        match: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/, // Vérification du format e-mail
+        // match: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/, // Vérification du format e-mail
     },
 
     // Mot de passe (hashé)
@@ -67,6 +63,22 @@ const userSchema = new mongoose.Schema({
     reset_password_expires: {
         type: Date, // Stocke la date limite d'utilisation du token
     },
+
+    rooms: {
+        type: [{
+            room: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'rooms',
+                required: true, // Assure qu'une room est toujours définie
+            },
+            favorite: {
+                type: Boolean,
+                default: false, // Permet de marquer une room comme favorite
+            }
+        }],
+        default: [] // Définit un tableau vide par défaut
+    },
+
 
     // URL de l'avatar de l'utilisateur (optionnel)
     avatar: {
