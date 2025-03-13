@@ -3,7 +3,7 @@ const User = require("../models/users");
 const Room = require("../models/rooms");
 
 module.exports = (io, socket) => {
-    console.log(`Socket ${socket.id} connecté à RoomSockets`);
+    console.log(`🟢 Socket ${socket.id} connecté à RoomSockets`);
 
     socket.on("joinRoom", async ({ roomId }, callback) => {
         try {
