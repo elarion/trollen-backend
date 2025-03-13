@@ -172,6 +172,39 @@ const joinByName = async ({ name, user, password = '' }) => {
     }
 }
 
+const joinByRandom = async (user) => {
+    try {
+        // Find a random room with no password or private settings false
+        // It must be a random room, not the first one finding one
+
+        const randomRoom = await Room.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { "settings.max": 0 },
+                        { $expr: { $gt: ["settings.max", { $size: "$participants" }] } }
+                    ],
+                    // check si password chaine de caractères vide
+                    // "settings.password": { $exists: false },
+                    "settings.is_private": false
+                }
+            },
+            { $sample: { size: 1 } }
+        ]);
+
+        if (!randomRoom) throw new CustomError('No room found', 404);
+
+        console.log('randomRoom =>', randomRoom);
+
+        return randomRoom[0];
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
+
 const remove = async (_id) => {
     try {
         const room = await Room.findOneAndDelete({ _id });
@@ -190,5 +223,6 @@ module.exports = {
     create,
     joinById,
     joinByName,
+    joinByRandom,
     remove
 };

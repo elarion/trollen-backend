@@ -104,9 +104,13 @@ module.exports = (io, socket) => {
             const target = await User.findById(targetId).select('username socket_id');
             if (!target || !target?.socket_id) throw new CustomError("Target not found", 404);
 
-            const roomSockets = io.sockets.adapter.rooms.get(roomId);
-            const isUserInRoomSocket = roomSockets && roomSockets.has(target.socket_id);
-            if (!isUserInRoomSocket) throw new CustomError("Target not in room", 404);
+            // const roomSockets = io.sockets.adapter.rooms.get(roomId);
+            // const isUserInRoomSocket = roomSockets && roomSockets.has(target.socket_id);
+            // if (!isUserInRoomSocket) throw new CustomError("Target not in room", 404);
+            const isUserExistsInRoom = await isUserInRoom(roomId, targetId);
+            if (!isUserExistsInRoom) {
+                return callback({ success: false, message: "The user is not in this room" });
+            }
 
             launchSpells[targetId].push(spell);
 

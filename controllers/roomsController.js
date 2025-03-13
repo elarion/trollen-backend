@@ -102,6 +102,16 @@ const joinRoomByName = async (req, res, next) => {
     }
 };
 
+const joinRoomByRandom = async (req, res, next) => {
+    try {
+        const room = await roomService.joinByRandom(req.user);
+
+        return res.status(200).json({ success: true, room });
+    } catch (error) {
+        next(error);
+    }
+}
+
 /**
  * Delete a room
  * @param {Object} req - The request object
@@ -126,7 +136,8 @@ module.exports = {
     joinRoomById,
     joinRoomByName,
     deleteRoom,
-    getRoomByName
+    getRoomByName,
+    joinRoomByRandom
 };
 
 

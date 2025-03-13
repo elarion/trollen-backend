@@ -7,7 +7,7 @@ const { modifyProfileService } = require("../services/userService")
 
 const preSignup = async (req, res, next) => {
     try {
-        res.status(201).json({ success: true, user: req.body });
+        res.status(200).json({ success: true, user: req.body });
     } catch (error) {
         next(error);
     }
