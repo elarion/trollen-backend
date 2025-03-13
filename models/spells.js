@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('../utils/slugify');
 
 const levelSchema = new mongoose.Schema({
 
@@ -64,6 +65,14 @@ const spellSchema = new mongoose.Schema({
         type: String,
         unique: true,
         required: true
+    },
+
+    slug: {
+        type: String,
+        unique: true,
+        default: function () {
+            return slugify(this.name);
+        }
     },
 
     description: {

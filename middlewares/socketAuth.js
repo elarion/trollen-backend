@@ -11,6 +11,8 @@ const socketAuth = async (socket, next) => {
 
         if (!user) throw new CustomError("User not found", 404);
 
+        console.log(`Bienvenue dans le socket mon ami => ${user.username}`);
+
         if (user?.socket_id && user.socket_id !== socket.id) {
             console.log(`Ancien socket détecté : ${user.socket_id}`);
 

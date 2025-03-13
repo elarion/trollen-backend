@@ -18,6 +18,8 @@ module.exports = (server) => {
             allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
             methods: ["GET", "POST", "PUT", "DELETE"],
         },
+        pingTimeout: 60000, // Ferme la connexion après 60 secondes sans réponse
+        pingInterval: 25000, // Ping du serveur toutes les 25 secondes
     });
 
     // On passe io en paramètre pour pouvoir l'utiliser dans les routes
@@ -35,6 +37,11 @@ module.exports = (server) => {
 
         // Gestion des erreurs
         // socket.use(socketErrorHandler);
+
+        // Gestion du ping du serveur
+        socket.on("pingServer", () => {
+            socket.emit("pongClient");
+        });
 
         // Gestion de la déconnexion
         socket.on("disconnect", async () => {
