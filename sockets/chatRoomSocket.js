@@ -8,7 +8,7 @@ const reconnectToRoom = require('../middlewares/socketReconnectRoom');
 const slugify = require('../utils/slugify');
 
 module.exports = (io, socket) => {
-    console.log(`Socket ${socket.id} connecté à ChatSockets`);
+    console.log(`🟢 Socket ${socket.id} connecté à ChatRoomSockets`);
 
     // Envoyer un message dans une room
     reconnectToRoom(io, socket, () => {
