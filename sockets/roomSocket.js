@@ -39,7 +39,7 @@ module.exports = (io, socket) => {
             console.log(`🏠 ${user.username} a rejoint la room ${roomId}`);
 
             // Informer les autres utilisateurs de la room
-            io.to(roomId.toString()).emit("userJoined", { username: user.username, roomId });
+            io.to(roomId.toString()).emit("userJoined", { username: user.username });
 
             const roomUpdated = await roomService.getById(roomId);
             io.to(roomId.toString()).emit("roomInfo", { room: roomUpdated });
@@ -70,6 +70,7 @@ module.exports = (io, socket) => {
                     io.to(socket.id).emit("spelledInRoom", { targetId, roomId });
                 }
             }
+
             // io.to(roomId).emit('spelledInRoom', { targetId, roomId });
 
             callback({ success: true });
@@ -88,7 +89,8 @@ module.exports = (io, socket) => {
     socket.on("leaveRoom", ({ roomId, username }, callback) => {
         try {
             socket.leave(roomId);
-            console.log('backend =>', `${username} a quitté la room ${roomId}`);
+            io.to(roomId.toString()).emit("userLeft", { username });
+            console.log(`👋 ${username} a quitté la room ${roomId}`);
             if (callback) return callback({ success: true });
         } catch (error) {
             if (callback) return callback({
