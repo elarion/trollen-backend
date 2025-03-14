@@ -80,7 +80,7 @@ const createCharacterFromSignup = async ({ _id: user, race = new mongoose.Types.
     // On récupère les sorts de la race
     const spells = theRace.spells.map(s => ({ spell: s._id }));
 
-    const allSpells = await Spell.find({ category: "active" }).limit(3).select('_id');
+    const allSpells = await Spell.find({ category: "active" }).limit(5).select('_id');
     spells.push(...allSpells.map(s => ({ spell: s._id, equipped: true })));
 
     let newCharacter = new Character({ user, race, gender, avatar, spells: spells });

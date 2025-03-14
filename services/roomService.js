@@ -41,6 +41,7 @@ const getByLimit = async ({ page = Number(page) || 1, limit = Number(limit) || 2
         const skip = (page - 1) * limit;
 
         const rooms = await Room.find()
+            .where('settings.is_private').equals(false)
             .skip(skip)
             .limit(limit)
             .select('_id room_socket_id name user tags settings participants')
@@ -63,6 +64,7 @@ const create = async (data) => {
     // user is the id of the user who created the room
     const { user, room_socket_id, name, tags, settings = {} } = data;
 
+    console.log('settings =>', settings);
     try {
         // a mettre après la création de la room comme ça si fail de la save de la room, les tags ne sont pas créés
         const newTags = await createTagsFromRoom(tags);
@@ -139,6 +141,7 @@ const joinByName = async ({ name, user, password = '' }) => {
         if (!isExist) throw new CustomError('Room not found', 404);
 
         // Check if the room is password protected
+        console.log('isExist.settings.password =>', isExist.settings.password);
         if (isExist.settings.password && !(await isExist.comparePassword(password)))
             throw new CustomError('Password is incorrect', 423);
 

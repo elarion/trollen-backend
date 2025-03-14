@@ -14,7 +14,7 @@ const spells = {
 	},
 
 	patatechaude: (content) => {
-		if (content.startsWith("éplucher ")) {
+		if (/^éplucher|eplucher/i.test(content)) {
 			return content.slice(9);
 		}
 
@@ -23,17 +23,31 @@ const spells = {
 
 	// BéBéGaiement
 	bbgaiement: (content) => {
+		// Alogorithme qui double ou tripler les 2 premières lettres de chaque mot de manière aléatoire
 		if (content.length > 1) {
 			return content
 				.split(' ')
-				.map(word => word.length > 1 ? word[0] + word[1] + word : word)
+				.map(word => {
+					// if (word.length <= 1) return word; // Ne pas modifier les mots d'une seule lettre
+
+					const firstTwoChars = word.substring(0, Math.min(2, word.length));
+					const rest = word.substring(Math.min(2, word.length));
+
+					// Choisir aléatoirement entre doubler (2) ou tripler (3)
+					const multiplier = Math.random() < 0.5 ? 2 : 3;
+
+					// Répéter les deux premières lettres selon le multiplicateur
+					const repeatedChars = firstTwoChars.repeat(multiplier);
+
+					return repeatedChars + rest;
+				})
 				.join(' ');
 		}
 		return content;
 	},
 
 	// CoupéDécalé
-	coupeDecale: (content) => {
+	coupdcal: (content) => {
 		if (content.length > 1) {
 			const mid = Math.floor(content.length / 2);
 			return content.slice(mid) + content.slice(0, mid);
@@ -41,8 +55,24 @@ const spells = {
 		return content;
 	},
 
+	// Megaraman : trouve un anagram pour chaque mot
+	megaraman: (content) => {
+		if (content.length > 1) {
+			return content.split(' ').map(word => word.split('').sort().join('')).join(' ');
+		}
+		return content;
+	},
+
+	// Nalrev
+	nalrev: (content) => {
+		if (content.length > 1) {
+			return content.split('').reverse().join('');
+		}
+		return content;
+	},
+
 	// MiroirMiroir
-	miroirMiroir: (content) => {
+	miroirmiroir: (content) => {
 		if (content.length > 1) {
 			return content + content.split('').reverse().join('');
 		}
