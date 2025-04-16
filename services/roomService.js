@@ -25,7 +25,7 @@ const getById = async (id) => {
             .populate([
                 { path: 'tags', select: '_id name slug' },
                 { path: 'admin', select: '_id username' },
-                { path: 'participants.user', select: '_id username' }
+                { path: 'participants.user', select: '_id username socket_id' }
             ]);
 
         if (!room) throw new CustomError('Room not foundsss', 404);
@@ -41,6 +41,7 @@ const getByLimit = async ({ page = Number(page) || 1, limit = Number(limit) || 2
         const skip = (page - 1) * limit;
 
         const rooms = await Room.find()
+            .where('settings.is_private').equals(false)
             .skip(skip)
             .limit(limit)
             .select('_id room_socket_id name user tags settings participants')
@@ -48,7 +49,9 @@ const getByLimit = async ({ page = Number(page) || 1, limit = Number(limit) || 2
                 { path: 'tags', select: '_id name slug' },
                 { path: 'admin', select: '_id username' },
                 { path: 'participants.user', select: '_id username email' }
-            ]);
+            ])
+            .sort({ createdAt: -1 })
+            .lean();
 
         return rooms
     } catch (error) {
@@ -61,6 +64,7 @@ const create = async (data) => {
     // user is the id of the user who created the room
     const { user, room_socket_id, name, tags, settings = {} } = data;
 
+    console.log('settings =>', settings);
     try {
         // a mettre après la création de la room comme ça si fail de la save de la room, les tags ne sont pas créés
         const newTags = await createTagsFromRoom(tags);
@@ -122,7 +126,9 @@ const joinById = async ({ _id, user, password = '' }) => {
             }
         }, { new: true }); // mémo: new true pour retourner le document après update
 
-        return room;
+        const roomUpdated = await getById(room._id);
+
+        return roomUpdated;
     } catch (error) {
         throw error;
     }
@@ -135,6 +141,7 @@ const joinByName = async ({ name, user, password = '' }) => {
         if (!isExist) throw new CustomError('Room not found', 404);
 
         // Check if the room is password protected
+        console.log('isExist.settings.password =>', isExist.settings.password);
         if (isExist.settings.password && !(await isExist.comparePassword(password)))
             throw new CustomError('Password is incorrect', 423);
 
@@ -168,6 +175,39 @@ const joinByName = async ({ name, user, password = '' }) => {
     }
 }
 
+const joinByRandom = async (user) => {
+    try {
+        // Find a random room with no password or private settings false
+        // It must be a random room, not the first one finding one
+
+        const randomRoom = await Room.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { "settings.max": 0 },
+                        { $expr: { $gt: ["settings.max", { $size: "$participants" }] } }
+                    ],
+                    // check si password chaine de caractères vide
+                    // "settings.password": { $exists: false },
+                    "settings.is_private": false
+                }
+            },
+            { $sample: { size: 1 } }
+        ]);
+
+        if (!randomRoom) throw new CustomError('No room found', 404);
+
+        console.log('randomRoom =>', randomRoom);
+
+        return randomRoom[0];
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
+
 const remove = async (_id) => {
     try {
         const room = await Room.findOneAndDelete({ _id });
@@ -186,5 +226,6 @@ module.exports = {
     create,
     joinById,
     joinByName,
+    joinByRandom,
     remove
 };

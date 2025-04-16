@@ -29,11 +29,18 @@ const messageRoomSchema = new mongoose.Schema({
     },
 
     // Sort éventuellement lancé dans ce message (optionnel)
-    spelled: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'spells',
-        default: null
-    },
+    spells: [{
+        spell: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'spells',
+            default: null
+        },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'users',
+            default: null
+        }
+    }],
 
     // Référence vers l'utilisateur ayant lancé un sort dans le message (optionnel)
     spelled_by: {

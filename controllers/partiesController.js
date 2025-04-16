@@ -30,12 +30,13 @@ const allParties = async (req, res, next) => {
 //Recherche d'une partie par son id
 const partyById = async (req, res, next) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const party = await Party.findById(id)
-        .populate([
-            {path: 'game', select: 'name'},
-            { path: "participants.user", select: "username" } 
-        ]);
+            .populate([
+                { path: 'game', select: 'name' },
+                { path: "participants.user", select: "username" },
+                { path: "admin", select: "username" }
+            ]);
         if (!party) {
             throw { statusCode: 404, message: "Party not found" };
         }
@@ -55,42 +56,44 @@ const partyById = async (req, res, next) => {
 }
 
 const joinPartyByJoinId = async (req, res, next) => {
-    try {
-        const { user, join_id } = req.body;
-        const existingUser = await User.findById(user);
-        if (!existingUser) {
-            throw { statusCode: 404, message: 'User not found' };
-        }
-        const party = await Party.findOne({ join_id });
-        if (!party) {
-            return res.status(404).json({ message: 'Party not found' });
-        }
-        const userAlreadyInParty = party.participants.some(participant => participant.user.toString() === user);
+    const user = req.user;
+    const { join_id, password } = req.body;
 
-        if (userAlreadyInParty) {
-            throw { statusCode: 400, message: 'User is already in this party' };
-        }
+    try {
+        const party = await Party.findOne({ join_id }).populate([{ path: 'participants', select: 'user' }, { path: 'game', select: '_id min max' }]);
+        if (!party) throw new CustomError("Party not found", 404);
+        if (party.max && party.participants.length >= party.game.max) throw new CustomError('Party is full', 401);
+
+        const userAlreadyInParty = party.participants.some(participant => participant.user.toString() === user._id.toString());
+        if (userAlreadyInParty) throw new CustomError('User already in this party', 401);
+
         const updatedParty = await Party.findByIdAndUpdate(
-            party._id, 
-            { $push: { participants: { user: user, role: 'troll' } } }, 
-            { new: true } 
+            party._id,
+            { $push: { participants: { user: user._id, role: 'troll' } } },
+            { new: true }
         );
 
-        if (!updatedParty) {
-            return res.status(500).json({ message: 'Failed to update party' });
-        }
+        // Checker si le nombre minimun de joueur est atteint mais non, en fait on va check si la party est en cours
+        const isMinPlayersReached = party.game.min && updatedParty.participants.length >= party.game.min;
 
-        res.status(200).json({ success: true, party: updatedParty });
+        if (!updatedParty) throw new CustomError('Failed to update party', 500);
+
+        res.status(200).json({ success: true, party: updatedParty, isMinPlayersReached });
     } catch (error) {
         next(error);
     }
 };
 
+// Create a route that delete a user from a party
+
 // Création d'une partie
 const createParty = async (req, res, next) => {
     const generateNumericId = (length) => Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
+
     try {
-        const { name, game, user,party_socket_id} = req.body
+        const user = req.user;
+
+        const { name, game } = req.body
 
         if (!name || !game || !user) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
@@ -105,15 +108,14 @@ const createParty = async (req, res, next) => {
         }
         const username = populatedUser.username;
 
-
         const newParty = new Party({
             name,
-            game:gameData._id,
-            party_socket_id,
+            game: gameData._id,
             join_id: `${username}#${generateNumericId(5)}`,
+            admin: user,
             participants: [{
                 user: user,
-                role: 'gamemaster',  
+                role: 'gamemaster',
                 status: 'online'
             }],
         });
@@ -129,21 +131,25 @@ const createParty = async (req, res, next) => {
 
 //matchmaking
 const joinParty = async (req, res, next) => {
+    const user = req.user;
+    const { games } = req.body;
+
+    // games du boddy est un tableau de string
     try {
-        const { user, games } = req.body; 
-
-        if (!user || !games || games.length === 0) {
-            return res.status(400).json({ success: false, message: 'Missing required fields' });
-        }
-
         const parties = await Party.find({
             game: { $in: games },
             // status: "waiting",
-            'participants.user': { $ne: user } 
+            'participants.user': { $ne: user }
         })
+<<<<<<< HEAD
         .populate('game', 'min max')
             .populate('participants.user', 'username'); 
     
+=======
+            .populate('game', 'min max')
+            .populate('participants.user', 'username');
+
+>>>>>>> cdbf7a3e4653d38e3a17ddda90d5b7c97de1de7c
         let minMissingPlayers = null;
         let bestParty = null;
 
@@ -152,7 +158,7 @@ const joinParty = async (req, res, next) => {
             const minimumPlayers = party.game.min;
             const missingPlayers = minimumPlayers - userAlreadyInParty;
 
-            if (missingPlayers <= 0) continue; 
+            if (missingPlayers <= 0) continue;
 
             if (minMissingPlayers === null || missingPlayers < minMissingPlayers) {
                 minMissingPlayers = missingPlayers;
@@ -163,14 +169,14 @@ const joinParty = async (req, res, next) => {
         if (!bestParty) {
             return res.status(404).json({ success: false, message: "Aucune partie avec des places disponibles." });
         }
-           
-            bestParty.participants.push({
-                user: user,
-                role: 'troll',
-                status: 'online'
-            });
 
-            await bestParty.save();
+        bestParty.participants.push({
+            user: user,
+            role: 'troll',
+            status: 'online'
+        });
+
+        await bestParty.save();
 
         res.status(200).json({ success: true, party: bestParty });
 
@@ -185,5 +191,5 @@ module.exports = {
     partyById,
     joinPartyByJoinId,
     createParty,
-    joinParty
+    joinParty,
 };

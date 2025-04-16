@@ -21,19 +21,16 @@ const characterSpellSchema = new mongoose.Schema({
 
     level: {
         type: Number,
-        required: true,
         default: 1,
     },
 
     xp: {
         type: Number,
-        required: true,
         default: 0,
     },
 
     count: {
         type: Number,
-        required: true,
         default: 0,
     },
 

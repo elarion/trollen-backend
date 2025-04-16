@@ -63,8 +63,9 @@ const getAllRooms = async (req, res, next) => {
 const createRoom = async (req, res, next) => {
     try {
         const user = req.user;
-        console.log('USERRRR =>', user);
         const room = await roomService.create({ ...req.body, user });
+
+        req.io.emit("newRoom", { room });
 
         res.status(201).json({ success: true, room });
     } catch (error) {
@@ -82,6 +83,9 @@ const joinRoomById = async (req, res, next) => {
     try {
         const room = await roomService.joinById({ _id: req.params.id, user: req.body.user, password: req.body.password });
 
+        // io.to("newRoom", room);
+        // io.to(room._id.toString()).emit("roomInfo", { room });
+
         return res.status(200).json({ success: true, room });
     } catch (error) {
         next(error);
@@ -97,6 +101,16 @@ const joinRoomByName = async (req, res, next) => {
         next(error);
     }
 };
+
+const joinRoomByRandom = async (req, res, next) => {
+    try {
+        const room = await roomService.joinByRandom(req.user);
+
+        return res.status(200).json({ success: true, room });
+    } catch (error) {
+        next(error);
+    }
+}
 
 /**
  * Delete a room
@@ -122,7 +136,8 @@ module.exports = {
     joinRoomById,
     joinRoomByName,
     deleteRoom,
-    getRoomByName
+    getRoomByName,
+    joinRoomByRandom
 };
 
 
